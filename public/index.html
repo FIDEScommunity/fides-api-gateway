@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FIDES Catalog API Gateway</title>
+</head>
+<body>
+  <h1>FIDES Catalog API Gateway</h1>
+  <p>This deployment proxies public catalog APIs to per-repository Vercel backends.</p>
+  <h2>Discovery</h2>
+  <ul>
+    <li><a href="/api/public/catalogs">GET /api/public/catalogs</a> — which catalogs are configured</li>
+  </ul>
+  <h2>Credential catalog</h2>
+  <ul>
+    <li><a href="/api/public/credentialtype">GET /api/public/credentialtype</a></li>
+    <li><a href="/api/public/api-docs">GET /api/public/api-docs</a> — OpenAPI (credential)</li>
+    <li><a href="/swagger.html">Swagger UI</a> (credential)</li>
+  </ul>
+  <h2>Organization catalog</h2>
+  <ul>
+    <li><a href="/api/public/organization">GET /api/public/organization</a></li>
+    <li><a href="/api/public/organization-api-docs">GET /api/public/organization-api-docs</a> — OpenAPI (organization)</li>
+    <li><a href="/swagger-organization.html">Swagger UI</a> (organization)</li>
+  </ul>
+</body>
+</html>
