@@ -1,6 +1,6 @@
 # FIDES API Gateway
 
-Single **Vercel** deployment that proxies public catalog APIs to each catalog’s own project (typically `*.vercel.app`). Use this when you want one hostname (for example `https://api.fides.community`) for credential + organization (+ future) APIs.
+Single **Vercel** deployment that proxies public catalog APIs to each catalog’s own project (typically `*.vercel.app`). Use this when you want one hostname (for example `https://api.fides.community`) for credential, organization, issuer, and future catalogs.
 
 ## Prerequisites
 
@@ -8,17 +8,17 @@ Each catalog must already be deployed to Vercel with working routes, for example
 
 - Credential: `GET /api/public/credentialtype`, `GET /api/public/api-docs` (upstream path; on the gateway use `credential-api-docs` — see Step 3).
 - Organization: `GET /api/public/organization`, `GET /api/public/api-docs` (upstream; on the gateway use `organization-api-docs`).
+- Issuer: `GET /api/public/issuer`, `GET /api/public/api-docs` (upstream; on the gateway use `issuer-api-docs`).
 
 Use each project’s **production `https://<name>.vercel.app` URL** as upstream — **not** the gateway hostname — or you will create a proxy loop.
 
 ### Gateway URL scheme (symmetry)
 
-On **this** deployment, credential and organization follow the same pattern:
-
 | Catalog | List | OpenAPI JSON | Swagger UI |
 |---------|------|--------------|--------------|
 | Credential | `/api/public/credentialtype` | `/api/public/credential-api-docs` | `/swagger-credentialtype.html` |
 | Organization | `/api/public/organization` | `/api/public/organization-api-docs` | `/swagger-organization.html` |
+| Issuer | `/api/public/issuer` | `/api/public/issuer-api-docs` | `/swagger-issuer.html` |
 
 Legacy **308 redirects**: `/api/public/api-docs` and `/swagger.html` → credential equivalents (old links keep working).
 
@@ -56,8 +56,9 @@ If `api.fides.community` is currently assigned to the credential project, that d
    |------|----------------|
    | `FIDES_CREDENTIAL_CATALOG_ORIGIN` | `https://fides-credential-catalog.vercel.app` |
    | `FIDES_ORGANIZATION_CATALOG_ORIGIN` | `https://fides-organization-catalog.vercel.app` |
+   | `FIDES_ISSUER_CATALOG_ORIGIN` | `https://fides-issuer-catalog.vercel.app` |
 
-   See `.env.example` for the full list.
+   See `.env.example` for the full list. Omit an origin if you do not want that catalog on this gateway yet.
 
 3. Redeploy after saving variables.
 4. Test the gateway production URL:
@@ -65,18 +66,19 @@ If `api.fides.community` is currently assigned to the credential project, that d
    - `/api/public/credentialtype`
    - `/api/public/credential-api-docs`
    - `/api/public/organization`
-   - `/swagger-credentialtype.html` and `/swagger-organization.html`
+   - `/api/public/issuer` and `/api/public/issuer-api-docs` (when `FIDES_ISSUER_CATALOG_ORIGIN` is set)
+   - `/swagger-credentialtype.html`, `/swagger-organization.html`, `/swagger-issuer.html`
    - Legacy (308 redirect): `/api/public/api-docs` → credential spec; `/swagger.html` → credential Swagger
 
 ---
 
 ## Step 4 — Custom domain (`api.fides.community`)
 
-Use this when the gateway is already **verified** on its `*.vercel.app` URL (Step 3) and `FIDES_CREDENTIAL_CATALOG_ORIGIN` / `FIDES_ORGANIZATION_CATALOG_ORIGIN` use those **`*.vercel.app`** bases — never the public API hostname (avoids a proxy loop).
+Use this when the gateway is already **verified** on its `*.vercel.app` URL (Step 3) and upstream env vars use those **`*.vercel.app`** bases — never the public API hostname (avoids a proxy loop).
 
 ### 4a — Double-check before you touch DNS
 
-- [ ] `https://<gateway>.vercel.app/api/public/catalogs` shows both catalogs `configured: true`.
+- [ ] `https://<gateway>.vercel.app/api/public/catalogs` shows each catalog you need as `configured: true`.
 - [ ] `https://<gateway>.vercel.app/api/public/credentialtype` returns data (proxies to credential backend).
 - [ ] `FIDES_CREDENTIAL_CATALOG_ORIGIN` in the gateway project is the credential project’s **`.vercel.app`** URL, **not** `https://api.fides.community`.
 
@@ -95,7 +97,7 @@ A hostname can only be attached to **one** Vercel project at a time.
 
 ### 4c — After cutover
 
-- Public URLs become: `https://api.fides.community/api/public/credentialtype`, `/api/public/organization`, etc.
+- Public URLs become: `https://api.fides.community/api/public/credentialtype`, `/api/public/organization`, `/api/public/issuer`, etc.
 - **Do not** change upstream env vars to `https://api.fides.community` — keep **`*.vercel.app`** origins.
 
 ### Rollback
@@ -115,8 +117,12 @@ Use [Vercel CLI](https://vercel.com/docs/cli) `vercel dev` with a local `.env` m
 
 ---
 
-## Adding wallet / RP / issuer later
+## Adding wallet / RP later
 
-1. Add the same serverless API pattern to those catalog repos (see `credential-catalog/API_SETUP.md`).
+**Issuer** is wired the same way as organization (`FIDES_ISSUER_CATALOG_ORIGIN`, `/api/public/issuer`, `/api/public/issuer-api-docs`, `/swagger-issuer.html`) once the issuer catalog is deployed to Vercel.
+
+For **wallet** and **RP** catalogs:
+
+1. Add the same serverless API pattern to those repos (see `credential-catalog/API_SETUP.md`).
 2. Deploy each to Vercel; note its `*.vercel.app` origin.
 3. In this gateway: new env var, new `api/public/<route>.ts` handler using `proxySamePath` or `proxyWithPathRewrite`, and extend `/api/public/catalogs` + `public/index.html`.

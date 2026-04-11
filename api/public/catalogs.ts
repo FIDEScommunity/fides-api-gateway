@@ -21,6 +21,7 @@ export default function handler(req: VercelRequest, res: VercelResponse): void {
 
   const credentialOrigin = !!process.env.FIDES_CREDENTIAL_CATALOG_ORIGIN;
   const organizationOrigin = !!process.env.FIDES_ORGANIZATION_CATALOG_ORIGIN;
+  const issuerOrigin = !!process.env.FIDES_ISSUER_CATALOG_ORIGIN;
 
   res.status(200).json({
     catalogs: [
@@ -39,6 +40,13 @@ export default function handler(req: VercelRequest, res: VercelResponse): void {
         listPath: "/api/public/organization",
         openApiPath: "/api/public/organization-api-docs",
         swaggerPath: "/swagger-organization.html",
+      },
+      {
+        id: "issuer",
+        configured: issuerOrigin,
+        listPath: "/api/public/issuer",
+        openApiPath: "/api/public/issuer-api-docs",
+        swaggerPath: "/swagger-issuer.html",
       },
     ],
   });
