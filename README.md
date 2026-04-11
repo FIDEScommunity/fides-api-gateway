@@ -57,13 +57,37 @@ If `api.fides.community` is currently assigned to the credential project, that d
 
 ---
 
-## Step 4 — Custom domain (optional)
+## Step 4 — Custom domain (`api.fides.community`)
 
-When you are ready for a single public API host:
+Use this when the gateway is already **verified** on its `*.vercel.app` URL (Step 3) and `FIDES_CREDENTIAL_CATALOG_ORIGIN` / `FIDES_ORGANIZATION_CATALOG_ORIGIN` use those **`*.vercel.app`** bases — never the public API hostname (avoids a proxy loop).
 
-1. In the **gateway** Vercel project, add the domain (for example `api.fides.community`).
-2. Remove that same domain from the **credential** project if it was attached there, so traffic hits the gateway only.
-3. Keep upstream env vars pointed at **`*.vercel.app`** URLs.
+### 4a — Double-check before you touch DNS
+
+- [ ] `https://<gateway>.vercel.app/api/public/catalogs` shows both catalogs `configured: true`.
+- [ ] `https://<gateway>.vercel.app/api/public/credentialtype` returns data (proxies to credential backend).
+- [ ] `FIDES_CREDENTIAL_CATALOG_ORIGIN` in the gateway project is the credential project’s **`.vercel.app`** URL, **not** `https://api.fides.community`.
+
+### 4b — Move the domain in Vercel (order matters)
+
+A hostname can only be attached to **one** Vercel project at a time.
+
+1. **Credential catalog project** (where `api.fides.community` is today): **Settings → Domains** → find `api.fides.community` → **Remove** (or “Edit” → remove).  
+   - The credential API stays available at its **`*.vercel.app`** URL for the gateway upstream.
+
+2. **Gateway project**: **Settings → Domains** → **Add** → enter `api.fides.community` → confirm.
+
+3. If Vercel shows **DNS instructions** (CNAME / A record): apply them at your DNS host (often the same records you used for the credential project; Vercel will show the current expected values). Wait until the domain shows **Valid** on the gateway project.
+
+4. **Redeploy** the gateway if Vercel suggests it after the domain change (usually not strictly required, but safe).
+
+### 4c — After cutover
+
+- Public URLs become: `https://api.fides.community/api/public/credentialtype`, `/api/public/organization`, etc.
+- **Do not** change upstream env vars to `https://api.fides.community` — keep **`*.vercel.app`** origins.
+
+### Rollback
+
+If something goes wrong: remove the domain from the **gateway** project, add it back to the **credential** project, fix DNS if needed, then debug the gateway on `*.vercel.app` again before retrying.
 
 ---
 
