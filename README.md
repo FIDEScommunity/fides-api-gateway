@@ -6,10 +6,21 @@ Single **Vercel** deployment that proxies public catalog APIs to each catalog’
 
 Each catalog must already be deployed to Vercel with working routes, for example:
 
-- Credential: `GET /api/public/credentialtype`, `GET /api/public/api-docs`
-- Organization: `GET /api/public/organization`, `GET /api/public/api-docs`
+- Credential: `GET /api/public/credentialtype`, `GET /api/public/api-docs` (upstream path; on the gateway use `credential-api-docs` — see Step 3).
+- Organization: `GET /api/public/organization`, `GET /api/public/api-docs` (upstream; on the gateway use `organization-api-docs`).
 
 Use each project’s **production `https://<name>.vercel.app` URL** as upstream — **not** the gateway hostname — or you will create a proxy loop.
+
+### Gateway URL scheme (symmetry)
+
+On **this** deployment, credential and organization follow the same pattern:
+
+| Catalog | List | OpenAPI JSON | Swagger UI |
+|---------|------|--------------|--------------|
+| Credential | `/api/public/credentialtype` | `/api/public/credential-api-docs` | `/swagger-credentialtype.html` |
+| Organization | `/api/public/organization` | `/api/public/organization-api-docs` | `/swagger-organization.html` |
+
+Legacy **308 redirects**: `/api/public/api-docs` and `/swagger.html` → credential equivalents (old links keep working).
 
 ---
 
@@ -21,8 +32,8 @@ Use each project’s **production `https://<name>.vercel.app` URL** as upstream 
 4. Deploy and open the **Production** URL, for example `https://fides-organization-catalog.vercel.app`.
 5. Verify:
    - `GET …/api/public/organization?page=0&size=5`
-   - `GET …/api/public/api-docs`
-   - Optional: `…/swagger.html`
+   - `GET …/api/public/api-docs` (OpenAPI on the organization project itself)
+   - Optional: `…/swagger.html` (on the organization project)
 
 Copy this production base URL (no trailing slash) for Step 3.
 
@@ -52,8 +63,10 @@ If `api.fides.community` is currently assigned to the credential project, that d
 4. Test the gateway production URL:
    - `/api/public/catalogs`
    - `/api/public/credentialtype`
+   - `/api/public/credential-api-docs`
    - `/api/public/organization`
-   - `/swagger.html` and `/swagger-organization.html`
+   - `/swagger-credentialtype.html` and `/swagger-organization.html`
+   - Legacy (308 redirect): `/api/public/api-docs` → credential spec; `/swagger.html` → credential Swagger
 
 ---
 

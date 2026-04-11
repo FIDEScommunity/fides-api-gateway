@@ -3,6 +3,18 @@
   "installCommand": "npm ci",
   "framework": null,
   "outputDirectory": "public",
+  "redirects": [
+    {
+      "source": "/swagger.html",
+      "destination": "/swagger-credentialtype.html",
+      "permanent": true
+    },
+    {
+      "source": "/api/public/api-docs",
+      "destination": "/api/public/credential-api-docs",
+      "permanent": true
+    }
+  ],
   "functions": {
     "api/**/*.ts": {
       "memory": 256,

@@ -28,8 +28,10 @@ export default function handler(req: VercelRequest, res: VercelResponse): void {
         id: "credential",
         configured: credentialOrigin,
         listPath: "/api/public/credentialtype",
-        openApiPath: "/api/public/api-docs",
-        swaggerPath: "/swagger.html",
+        openApiPath: "/api/public/credential-api-docs",
+        swaggerPath: "/swagger-credentialtype.html",
+        legacyOpenApiPath: "/api/public/api-docs",
+        legacySwaggerPath: "/swagger.html",
       },
       {
         id: "organization",
