@@ -55,11 +55,6 @@ export default function handler(req: VercelRequest, res: VercelResponse): void {
         listPath: "/api/public/wallet",
         openApiPath: "/api/public/wallet-api-docs",
         swaggerPath: "/swagger-wallet.html",
-        supportingPaths: [
-          "/api/public/providers",
-          "/api/public/stats",
-          "/api/public/filter-options",
-        ],
       },
     ],
   });

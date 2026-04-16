@@ -9,7 +9,7 @@ Each catalog must already be deployed to Vercel with working routes, for example
 - Credential: `GET /api/public/credentialtype`, `GET /api/public/api-docs` (upstream path; on the gateway use `credential-api-docs` — see Step 3).
 - Organization: `GET /api/public/organization`, `GET /api/public/api-docs` (upstream; on the gateway use `organization-api-docs`).
 - Issuer: `GET /api/public/issuer`, `GET /api/public/api-docs` (upstream; on the gateway use `issuer-api-docs`).
-- Wallet: `GET /api/public/wallet`, plus `providers`, `stats`, `filter-options`, and `GET /api/public/api-docs` (upstream; on the gateway use `wallet-api-docs` for the OpenAPI spec).
+- Wallet: `GET /api/public/wallet`, wallet detail path, and `GET /api/public/api-docs` (upstream; on the gateway use `wallet-api-docs` for the OpenAPI spec).
 
 Use each project’s **production `https://<name>.vercel.app` URL** as upstream — **not** the gateway hostname — or you will create a proxy loop.
 
@@ -20,7 +20,7 @@ Use each project’s **production `https://<name>.vercel.app` URL** as upstream 
 | Credential | `/api/public/credentialtype` | `/api/public/credential-api-docs` | `/swagger-credentialtype.html` |
 | Organization | `/api/public/organization` | `/api/public/organization-api-docs` | `/swagger-organization.html` |
 | Issuer | `/api/public/issuer` | `/api/public/issuer-api-docs` | `/swagger-issuer.html` |
-| Wallet | `/api/public/wallet` (+ `/api/public/providers`, `/stats`, `/filter-options`) | `/api/public/wallet-api-docs` | `/swagger-wallet.html` |
+| Wallet | `/api/public/wallet` (+ detail under `/api/public/wallet/…`) | `/api/public/wallet-api-docs` | `/swagger-wallet.html` |
 
 Legacy **308 redirects**: `/api/public/api-docs` and `/swagger.html` → credential equivalents (old links keep working).
 
@@ -71,7 +71,7 @@ If `api.fides.community` is currently assigned to the credential project, that d
    - `/api/public/organization`
    - `/api/public/issuer` and `/api/public/issuer-api-docs` (when `FIDES_ISSUER_CATALOG_ORIGIN` is set)
    - `/swagger-credentialtype.html`, `/swagger-organization.html`, `/swagger-issuer.html`, `/swagger-wallet.html`
-   - When `FIDES_WALLET_CATALOG_ORIGIN` is set: `/api/public/wallet`, `/api/public/providers`, `/api/public/stats`, `/api/public/filter-options`
+   - When `FIDES_WALLET_CATALOG_ORIGIN` is set: `/api/public/wallet` and wallet detail URLs
    - Legacy (308 redirect): `/api/public/api-docs` → credential spec; `/swagger.html` → credential Swagger
 
 ---
