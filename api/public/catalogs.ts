@@ -22,6 +22,7 @@ export default function handler(req: VercelRequest, res: VercelResponse): void {
   const credentialOrigin = !!process.env.FIDES_CREDENTIAL_CATALOG_ORIGIN;
   const organizationOrigin = !!process.env.FIDES_ORGANIZATION_CATALOG_ORIGIN;
   const issuerOrigin = !!process.env.FIDES_ISSUER_CATALOG_ORIGIN;
+  const walletOrigin = !!process.env.FIDES_WALLET_CATALOG_ORIGIN;
 
   res.status(200).json({
     catalogs: [
@@ -47,6 +48,18 @@ export default function handler(req: VercelRequest, res: VercelResponse): void {
         listPath: "/api/public/issuer",
         openApiPath: "/api/public/issuer-api-docs",
         swaggerPath: "/swagger-issuer.html",
+      },
+      {
+        id: "wallet",
+        configured: walletOrigin,
+        listPath: "/api/public/wallet",
+        openApiPath: "/api/public/wallet-api-docs",
+        swaggerPath: "/swagger-wallet.html",
+        supportingPaths: [
+          "/api/public/providers",
+          "/api/public/stats",
+          "/api/public/filter-options",
+        ],
       },
     ],
   });
