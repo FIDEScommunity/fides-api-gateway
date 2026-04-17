@@ -1,0 +1,237 @@
+/* FIDES API Gateway landing — static page only */
+
+:root {
+  --header-bg: #0c4a6e;
+  --header-text: #f8fafc;
+  --body-bg: #f1f5f9;
+  --card-bg: #ffffff;
+  --text: #0f172a;
+  --text-muted: #64748b;
+  --link: #0369a1;
+  --link-hover: #0c4a6e;
+  --radius: 10px;
+  --shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--text);
+  background: var(--body-bg);
+}
+
+.site-header {
+  background: var(--header-bg);
+  color: var(--header-text);
+  padding: 1rem 1.25rem;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.12);
+}
+
+.header-inner {
+  max-width: 1040px;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem 1.5rem;
+}
+
+.site-header .logo-link {
+  display: inline-flex;
+  align-items: center;
+  line-height: 0;
+}
+
+.site-header .logo {
+  height: 40px;
+  width: auto;
+  max-width: min(220px, 55vw);
+  display: block;
+}
+
+.header-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  margin-left: auto;
+  text-align: right;
+}
+
+.header-host {
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.header-tagline {
+  font-size: 0.8rem;
+  opacity: 0.88;
+}
+
+main {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 3rem;
+}
+
+.hero {
+  margin-bottom: 2rem;
+}
+
+.hero h1 {
+  margin: 0 0 0.75rem;
+  font-size: clamp(1.5rem, 4vw, 1.85rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.hero p {
+  margin: 0 0 1.25rem;
+  color: var(--text-muted);
+  max-width: 52ch;
+}
+
+.cta-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.1rem;
+  background: var(--header-bg);
+  color: #fff !important;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.cta-primary:hover {
+  background: #0a3d5c;
+  color: #fff !important;
+}
+
+.cta-primary:focus-visible {
+  outline: 2px solid #38bdf8;
+  outline-offset: 2px;
+}
+
+.section-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 2rem 0 1rem;
+  letter-spacing: -0.01em;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.catalog-card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 1.15rem 1.2rem;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+}
+
+.catalog-card h3 {
+  margin: 0 0 0.85rem;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--header-bg);
+}
+
+.catalog-card ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.catalog-card li {
+  margin-bottom: 0.5rem;
+}
+
+.catalog-card li:last-child {
+  margin-bottom: 0;
+}
+
+.catalog-card a {
+  color: var(--link);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.catalog-card a:hover {
+  text-decoration: underline;
+  color: var(--link-hover);
+}
+
+.catalog-card code {
+  font-size: 0.78rem;
+  word-break: break-all;
+  color: var(--text-muted);
+}
+
+.text-muted {
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  font-weight: 400;
+}
+
+details.legacy {
+  margin-top: 2rem;
+  padding: 1rem 1.1rem;
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  border: 1px dashed rgba(100, 116, 139, 0.45);
+}
+
+details.legacy summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+details.legacy p {
+  margin: 0.75rem 0 0;
+  font-size: 0.88rem;
+  color: var(--text-muted);
+}
+
+.site-footer {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 1.5rem 1.25rem 2rem;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.site-footer a {
+  color: var(--link);
+  text-decoration: none;
+}
+
+.site-footer a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 520px) {
+  .header-meta {
+    margin-left: 0;
+    text-align: left;
+    width: 100%;
+  }
+}

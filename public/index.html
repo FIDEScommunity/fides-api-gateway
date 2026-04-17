@@ -3,40 +3,86 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="FIDES public catalog APIs on api.fides.community — credential, organization, issuer, and wallet JSON APIs with OpenAPI and Swagger.">
   <title>FIDES Catalog API Gateway</title>
+  <link rel="stylesheet" href="/gateway.css">
 </head>
 <body>
-  <h1>FIDES Catalog API Gateway</h1>
-  <p>This deployment proxies public catalog APIs to per-repository Vercel backends.</p>
-  <h2>Discovery</h2>
-  <ul>
-    <li><a href="/api/public/catalogs">GET /api/public/catalogs</a> — which catalogs are configured</li>
-  </ul>
-  <h2>Credential catalog</h2>
-  <ul>
-    <li><a href="/api/public/credentialtype">GET /api/public/credentialtype</a></li>
-    <li><a href="/api/public/credential-api-docs">GET /api/public/credential-api-docs</a> — OpenAPI (credential)</li>
-    <li><a href="/swagger-credentialtype.html">Swagger UI</a> (credential)</li>
-  </ul>
-  <p><small>Legacy URLs (redirect): <a href="/api/public/api-docs">/api/public/api-docs</a>, <a href="/swagger.html">/swagger.html</a></small></p>
-  <h2>Organization catalog</h2>
-  <ul>
-    <li><a href="/api/public/organization">GET /api/public/organization</a></li>
-    <li><a href="/api/public/organization-api-docs">GET /api/public/organization-api-docs</a> — OpenAPI (organization)</li>
-    <li><a href="/swagger-organization.html">Swagger UI</a> (organization)</li>
-  </ul>
-  <h2>Issuer catalog</h2>
-  <ul>
-    <li><a href="/api/public/issuer">GET /api/public/issuer</a></li>
-    <li><a href="/api/public/issuer-api-docs">GET /api/public/issuer-api-docs</a> — OpenAPI (issuer)</li>
-    <li><a href="/swagger-issuer.html">Swagger UI</a> (issuer)</li>
-  </ul>
-  <h2>Wallet catalog</h2>
-  <ul>
-    <li><a href="/api/public/wallet">GET /api/public/wallet</a> — list (paginated)</li>
-    <li><code>GET /api/public/wallet/{orgId}/{walletId}</code> — one wallet</li>
-    <li><a href="/api/public/wallet-api-docs">GET /api/public/wallet-api-docs</a> — OpenAPI (wallet)</li>
-    <li><a href="/swagger-wallet.html">Swagger UI</a> (wallet)</li>
-  </ul>
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="https://fides.community/" class="logo-link" aria-label="FIDES — home">
+        <img
+          class="logo"
+          src="https://fides.community/app/uploads/2025/06/FIDES_LOGO_WHITE_01.png"
+          height="40"
+          alt="FIDES"
+        >
+      </a>
+      <div class="header-meta">
+        <span class="header-host">api.fides.community</span>
+        <span class="header-tagline">Public catalog APIs · one hostname</span>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <h1>FIDES Catalog API Gateway</h1>
+      <p>
+        Read-only JSON APIs for the FIDES community catalogs. This host proxies requests to each catalog deployment — use it for integrations and tooling.
+      </p>
+      <a class="cta-primary" href="/api/public/catalogs">GET /api/public/catalogs — Discover configured catalogs</a>
+    </section>
+
+    <h2 class="section-title">Catalogs</h2>
+    <div class="card-grid">
+      <article class="catalog-card">
+        <h3>Credential</h3>
+        <ul>
+          <li><a href="/api/public/credentialtype">List API</a></li>
+          <li><a href="/api/public/credential-api-docs">OpenAPI JSON</a></li>
+          <li><a href="/swagger-credentialtype.html">Swagger UI</a></li>
+        </ul>
+      </article>
+      <article class="catalog-card">
+        <h3>Organization</h3>
+        <ul>
+          <li><a href="/api/public/organization">List API</a></li>
+          <li><a href="/api/public/organization-api-docs">OpenAPI JSON</a></li>
+          <li><a href="/swagger-organization.html">Swagger UI</a></li>
+        </ul>
+      </article>
+      <article class="catalog-card">
+        <h3>Issuer</h3>
+        <ul>
+          <li><a href="/api/public/issuer">List API</a></li>
+          <li><a href="/api/public/issuer-api-docs">OpenAPI JSON</a></li>
+          <li><a href="/swagger-issuer.html">Swagger UI</a></li>
+        </ul>
+      </article>
+      <article class="catalog-card">
+        <h3>Wallet</h3>
+        <ul>
+          <li><a href="/api/public/wallet">List API</a> <span class="text-muted">(paginated)</span></li>
+          <li><code>GET /api/public/wallet/{orgId}/{walletId}</code></li>
+          <li><a href="/api/public/wallet-api-docs">OpenAPI JSON</a></li>
+          <li><a href="/swagger-wallet.html">Swagger UI</a></li>
+        </ul>
+      </article>
+    </div>
+
+    <details class="legacy">
+      <summary>Legacy URL redirects</summary>
+      <p>
+        <a href="/api/public/api-docs">/api/public/api-docs</a> and
+        <a href="/swagger.html">/swagger.html</a> redirect to the credential catalog OpenAPI and Swagger (308).
+      </p>
+    </details>
+  </main>
+
+  <footer class="site-footer">
+    <a href="https://fides.community/">fides.community</a>
+    · Apache-2.0
+  </footer>
 </body>
 </html>
