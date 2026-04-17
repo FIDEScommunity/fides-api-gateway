@@ -152,7 +152,7 @@ main {
   margin: 0 0 0.85rem;
   font-size: 1rem;
   font-weight: 700;
-  color: var(--header-bg);
+  color: var(--text);
 }
 
 .catalog-card ul {
