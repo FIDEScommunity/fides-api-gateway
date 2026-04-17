@@ -6,21 +6,21 @@ Single **Vercel** deployment that proxies public catalog APIs to each catalog’
 
 Each catalog must already be deployed to Vercel with working routes, for example:
 
-- Credential: `GET /api/public/credentialtype`, `GET /api/public/api-docs` (upstream path; on the gateway use `credential-api-docs` — see Step 3).
-- Organization: `GET /api/public/organization`, `GET /api/public/api-docs` (upstream; on the gateway use `organization-api-docs`).
-- Issuer: `GET /api/public/issuer`, `GET /api/public/api-docs` (upstream; on the gateway use `issuer-api-docs`).
+- Credential: `GET /api/public/credentialtype`, `GET /api/public/credentialtype/{id}`, `GET /api/public/api-docs` (upstream path; on the gateway use `credential-api-docs` — see Step 3).
+- Organization: `GET /api/public/organization`, `GET /api/public/organization/{id}`, `GET /api/public/api-docs` (upstream; on the gateway use `organization-api-docs`).
+- Issuer: `GET /api/public/issuer`, `GET /api/public/issuer/{id}`, `GET /api/public/api-docs` (upstream; on the gateway use `issuer-api-docs`).
 - Wallet: `GET /api/public/wallet`, wallet detail path, and `GET /api/public/api-docs` (upstream; on the gateway use `wallet-api-docs` for the OpenAPI spec).
 
 Use each project’s **production `https://<name>.vercel.app` URL** as upstream — **not** the gateway hostname — or you will create a proxy loop.
 
 ### Gateway URL scheme (symmetry)
 
-| Catalog | List | OpenAPI JSON | Swagger UI |
-|---------|------|--------------|--------------|
-| Credential | `/api/public/credentialtype` | `/api/public/credential-api-docs` | `/swagger-credentialtype.html` |
-| Organization | `/api/public/organization` | `/api/public/organization-api-docs` | `/swagger-organization.html` |
-| Issuer | `/api/public/issuer` | `/api/public/issuer-api-docs` | `/swagger-issuer.html` |
-| Wallet | `/api/public/wallet` (+ detail under `/api/public/wallet/…`) | `/api/public/wallet-api-docs` | `/swagger-wallet.html` |
+| Catalog | List | Detail | OpenAPI JSON | Swagger UI |
+|---------|------|--------|--------------|--------------|
+| Credential | `/api/public/credentialtype` | `/api/public/credentialtype/{id}` | `/api/public/credential-api-docs` | `/swagger-credentialtype.html` |
+| Organization | `/api/public/organization` | `/api/public/organization/{id}` | `/api/public/organization-api-docs` | `/swagger-organization.html` |
+| Issuer | `/api/public/issuer` | `/api/public/issuer/{id}` | `/api/public/issuer-api-docs` | `/swagger-issuer.html` |
+| Wallet | `/api/public/wallet` | `/api/public/wallet/{orgId}/{walletId}` | `/api/public/wallet-api-docs` | `/swagger-wallet.html` |
 
 Legacy **308 redirects**: `/api/public/api-docs` and `/swagger.html` → credential equivalents (old links keep working).
 
