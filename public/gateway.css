@@ -1,11 +1,11 @@
 /* FIDES API Gateway landing — static page only */
 
-/* Brand blues aligned with fides.community (Blocksy palette defaults) */
+/* Primary brand blue: rgb(10, 110, 242) — matches design-token blue on fides.community */
 :root {
-  --fides-blue: #0a6ef3;
+  --fides-blue: rgb(10, 110, 242);
   --fides-blue-dark: #0848a3;
   --fides-blue-light: #9ac4fc;
-  --header-bg: var(--fides-blue-dark);
+  --header-bg: var(--fides-blue);
   --header-text: #fdfdfd;
   --body-bg: #eaebee;
   --card-bg: #ffffff;
@@ -114,7 +114,7 @@ main {
 }
 
 .cta-primary:hover {
-  background: #063d8a;
+  background: var(--fides-blue-dark);
   color: #fff !important;
 }
 
