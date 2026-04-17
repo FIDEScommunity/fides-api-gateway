@@ -1,14 +1,18 @@
 /* FIDES API Gateway landing — static page only */
 
+/* Brand blues aligned with fides.community (Blocksy palette defaults) */
 :root {
-  --header-bg: #0c4a6e;
-  --header-text: #f8fafc;
-  --body-bg: #f1f5f9;
+  --fides-blue: #0a6ef3;
+  --fides-blue-dark: #0848a3;
+  --fides-blue-light: #9ac4fc;
+  --header-bg: var(--fides-blue-dark);
+  --header-text: #fdfdfd;
+  --body-bg: #eaebee;
   --card-bg: #ffffff;
-  --text: #0f172a;
+  --text: #000000;
   --text-muted: #64748b;
-  --link: #0369a1;
-  --link-hover: #0c4a6e;
+  --link: var(--fides-blue);
+  --link-hover: var(--fides-blue-dark);
   --radius: 10px;
   --shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
 }
@@ -71,11 +75,6 @@ body {
   letter-spacing: 0.02em;
 }
 
-.header-tagline {
-  font-size: 0.8rem;
-  opacity: 0.88;
-}
-
 main {
   max-width: 1040px;
   margin: 0 auto;
@@ -115,12 +114,12 @@ main {
 }
 
 .cta-primary:hover {
-  background: #0a3d5c;
+  background: #063d8a;
   color: #fff !important;
 }
 
 .cta-primary:focus-visible {
-  outline: 2px solid #38bdf8;
+  outline: 2px solid var(--fides-blue-light);
   outline-offset: 2px;
 }
 
