@@ -3,6 +3,12 @@
   "installCommand": "npm ci",
   "framework": null,
   "outputDirectory": "public",
+  "rewrites": [
+    {
+      "source": "/.well-known/api-catalog",
+      "destination": "/api/well-known-api-catalog"
+    }
+  ],
   "redirects": [
     {
       "source": "/swagger.html",

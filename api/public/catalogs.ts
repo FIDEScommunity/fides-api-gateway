@@ -1,4 +1,8 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
+import {
+  GATEWAY_CATALOG_ROUTES,
+  isCatalogConfigured,
+} from "../../lib/gatewayCatalogs";
 import { applyCors } from "../../lib/proxyUpstream";
 
 /**
@@ -19,47 +23,20 @@ export default function handler(req: VercelRequest, res: VercelResponse): void {
     return;
   }
 
-  const credentialOrigin = !!process.env.FIDES_CREDENTIAL_CATALOG_ORIGIN;
-  const organizationOrigin = !!process.env.FIDES_ORGANIZATION_CATALOG_ORIGIN;
-  const issuerOrigin = !!process.env.FIDES_ISSUER_CATALOG_ORIGIN;
-  const walletOrigin = !!process.env.FIDES_WALLET_CATALOG_ORIGIN;
-
   res.status(200).json({
-    catalogs: [
-      {
-        id: "credential",
-        configured: credentialOrigin,
-        listPath: "/api/public/credentialtype",
-        detailPathPattern: "/api/public/credentialtype/{id}",
-        openApiPath: "/api/public/credential-api-docs",
-        swaggerPath: "/swagger-credentialtype.html",
-        legacyOpenApiPath: "/api/public/api-docs",
-        legacySwaggerPath: "/swagger.html",
-      },
-      {
-        id: "organization",
-        configured: organizationOrigin,
-        listPath: "/api/public/organization",
-        detailPathPattern: "/api/public/organization/{id}",
-        openApiPath: "/api/public/organization-api-docs",
-        swaggerPath: "/swagger-organization.html",
-      },
-      {
-        id: "issuer",
-        configured: issuerOrigin,
-        listPath: "/api/public/issuer",
-        detailPathPattern: "/api/public/issuer/{id}",
-        openApiPath: "/api/public/issuer-api-docs",
-        swaggerPath: "/swagger-issuer.html",
-      },
-      {
-        id: "wallet",
-        configured: walletOrigin,
-        listPath: "/api/public/wallet",
-        detailPathPattern: "/api/public/wallet/{orgId}/{walletId}",
-        openApiPath: "/api/public/wallet-api-docs",
-        swaggerPath: "/swagger-wallet.html",
-      },
-    ],
+    catalogs: GATEWAY_CATALOG_ROUTES.map((route) => ({
+      id: route.id,
+      configured: isCatalogConfigured(route),
+      listPath: route.listPath,
+      detailPathPattern: route.detailPathPattern,
+      openApiPath: route.openApiPath,
+      swaggerPath: route.swaggerPath,
+      ...(route.legacyOpenApiPath
+        ? { legacyOpenApiPath: route.legacyOpenApiPath }
+        : {}),
+      ...(route.legacySwaggerPath
+        ? { legacySwaggerPath: route.legacySwaggerPath }
+        : {}),
+    })),
   });
 }
