@@ -7,6 +7,8 @@ import { applyCors } from "../../lib/proxyUpstream";
 
 /**
  * Discovery: which catalog routes are configured on this gateway deployment.
+ * Data comes from `lib/gatewayCatalogs.ts` — update that module when API paths change
+ * (see README.md → “Maintaining discovery”).
  */
 export default function handler(req: VercelRequest, res: VercelResponse): void {
   applyCors(res);

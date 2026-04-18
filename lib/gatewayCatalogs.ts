@@ -1,5 +1,14 @@
 /**
- * Shared catalog route metadata for the FIDES API gateway (discovery + RFC 9727).
+ * Single source of truth for which public catalog APIs this gateway exposes and how
+ * they are named on the gateway hostname.
+ *
+ * **When you change the gateway API surface**, update this module first, then adjust
+ * proxy handlers under `api/public/` (and `vercel.json` redirects) as needed.
+ * The following read from `GATEWAY_CATALOG_ROUTES` / `isCatalogConfigured()`:
+ * - `GET /api/public/catalogs` — JSON discovery for humans and tools
+ * - `GET /.well-known/api-catalog` — RFC 9727 Linkset for automated agent discovery
+ *
+ * See README.md → “Maintaining discovery (`lib/gatewayCatalogs.ts`)”.
  */
 
 export type GatewayCatalogId =

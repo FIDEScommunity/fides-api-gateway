@@ -23,8 +23,11 @@ function catalogDocumentPath(origin: string): string {
 }
 
 /**
- * RFC 9727 api-catalog: machine-readable API discovery (application/linkset+json).
- * Public URL: /.well-known/api-catalog (via vercel.json rewrite).
+ * RFC 9727 api-catalog: machine-readable API discovery (`application/linkset+json`).
+ * Served at `/.well-known/api-catalog` via `vercel.json` rewrite to this handler.
+ *
+ * Catalog entries are driven by `lib/gatewayCatalogs.ts` — do not duplicate paths here.
+ * Maintenance: README.md → “Maintaining discovery (`lib/gatewayCatalogs.ts`)”.
  */
 export default function handler(req: VercelRequest, res: VercelResponse): void {
   applyCors(res);

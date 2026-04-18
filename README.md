@@ -24,6 +24,33 @@ Use each project’s **production `https://<name>.vercel.app` URL** as upstream 
 
 Legacy **308 redirects**: `/api/public/api-docs` and `/swagger.html` → credential equivalents (old links keep working).
 
+### Agent discovery — `/.well-known/api-catalog` (RFC 9727)
+
+This gateway exposes [RFC 9727](https://www.rfc-editor.org/rfc/rfc9727) **api-catalog** discovery:
+
+- **URL:** `GET` / `HEAD` `https://<gateway>/.well-known/api-catalog`
+- **Format:** `application/linkset+json` with profile `https://www.rfc-editor.org/info/rfc9727`
+- **Implementation:** `api/well-known-api-catalog.ts`, rewritten in `vercel.json` from `/.well-known/api-catalog`
+
+`HEAD` responses include a `Link` header with `rel="api-catalog"` as required by the RFC.
+
+### Maintaining discovery (`lib/gatewayCatalogs.ts`)
+
+**`lib/gatewayCatalogs.ts` is the single place to update** when you add, remove, or rename gateway routes for a catalog (list path, OpenAPI path, Swagger HTML, upstream env var name). It feeds:
+
+| Consumer | Purpose |
+|----------|---------|
+| `api/public/catalogs.ts` | JSON list of catalogs and paths (`configured` follows upstream env vars) |
+| `api/well-known-api-catalog.ts` | RFC 9727 Linkset: `item` links to each **configured** catalog’s list endpoint |
+
+If you add a new proxy under `api/public/` but forget to extend `GATEWAY_CATALOG_ROUTES`, automated discovery and agent-oriented tools will be **out of date** even if the route works.
+
+**Checklist when changing the public API surface**
+
+1. Edit **`lib/gatewayCatalogs.ts`** (`GATEWAY_CATALOG_ROUTES`, and `GatewayCatalogId` if you add a catalog).
+2. Add or adjust **serverless handlers** and **`vercel.json`** redirects if paths change.
+3. Redeploy and verify **`/api/public/catalogs`** and **`/.well-known/api-catalog`** (with `Accept: application/linkset+json`).
+
 ---
 
 ## Step 1 — Organization catalog on Vercel
@@ -66,6 +93,7 @@ If `api.fides.community` is currently assigned to the credential project, that d
 3. Redeploy after saving variables.
 4. Test the gateway production URL:
    - `/api/public/catalogs`
+   - `/.well-known/api-catalog` (RFC 9727 Linkset; use `Accept: application/linkset+json` if your client negotiates)
    - `/api/public/credentialtype`
    - `/api/public/credential-api-docs`
    - `/api/public/organization`
@@ -129,4 +157,4 @@ For the **RP** catalog:
 
 1. Add the serverless API pattern in that repo (see `credential-catalog/API_SETUP.md`).
 2. Deploy to Vercel; note its `*.vercel.app` origin.
-3. In this gateway: new env var, proxy handlers, and extend `/api/public/catalogs` + `public/index.html`.
+3. In this gateway: new env var, proxy handlers, extend **`lib/gatewayCatalogs.ts`** (and `GatewayCatalogId`), update **`public/index.html`** if you list catalogs there, then verify **`/api/public/catalogs`** and **`/.well-known/api-catalog`**.
