@@ -192,27 +192,6 @@ main {
   font-weight: 400;
 }
 
-details.legacy {
-  margin-top: 2rem;
-  padding: 1rem 1.1rem;
-  background: var(--card-bg);
-  border-radius: var(--radius);
-  border: 1px dashed rgba(100, 116, 139, 0.45);
-}
-
-details.legacy summary {
-  cursor: pointer;
-  font-weight: 600;
-  color: var(--text-muted);
-  font-size: 0.9rem;
-}
-
-details.legacy p {
-  margin: 0.75rem 0 0;
-  font-size: 0.88rem;
-  color: var(--text-muted);
-}
-
 .site-footer {
   max-width: 1040px;
   margin: 0 auto;
