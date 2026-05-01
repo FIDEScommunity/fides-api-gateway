@@ -24,6 +24,21 @@ Use each project’s **production `https://<name>.vercel.app` URL** as upstream 
 
 Legacy **308 redirects**: `/api/public/api-docs` and `/swagger.html` → credential equivalents (old links keep working).
 
+### Issuer list query filters (via gateway)
+
+The gateway forwards issuer query parameters unchanged to the issuer upstream.
+Current issuer list filters include:
+
+- `search`
+- `environment`
+- `orgId`
+- `vcFormat`
+- `credentialCatalogId`
+- `subjectType`
+- `tags`
+- `country`
+- `sort`, `direction`, `page`, `size`
+
 ### Agent discovery — `/.well-known/api-catalog` (RFC 9727)
 
 This gateway exposes [RFC 9727](https://www.rfc-editor.org/rfc/rfc9727) **api-catalog** discovery:
