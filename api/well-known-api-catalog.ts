@@ -2,6 +2,7 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { applyCors } from "../lib/proxyUpstream";
 import {
   GATEWAY_CATALOG_ROUTES,
+  GATEWAY_MCP_PATH,
   isCatalogConfigured,
 } from "../lib/gatewayCatalogs";
 
@@ -70,6 +71,8 @@ export default function handler(req: VercelRequest, res: VercelResponse): void {
       {
         anchor: catalogUrl,
         item: items,
+        // MCP server endpoint for AI agents (Streamable HTTP).
+        service: [{ href: `${origin}${GATEWAY_MCP_PATH}` }],
       },
     ],
   };

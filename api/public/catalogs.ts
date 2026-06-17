@@ -1,6 +1,7 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import {
   GATEWAY_CATALOG_ROUTES,
+  GATEWAY_MCP_PATH,
   isCatalogConfigured,
 } from "../../lib/gatewayCatalogs";
 import { applyCors } from "../../lib/proxyUpstream";
@@ -26,6 +27,12 @@ export default function handler(req: VercelRequest, res: VercelResponse): void {
   }
 
   res.status(200).json({
+    mcp: {
+      path: GATEWAY_MCP_PATH,
+      transport: "streamable-http",
+      description:
+        "MCP server for the FIDES Ecosystem Explorer (add as an AI connector).",
+    },
     catalogs: GATEWAY_CATALOG_ROUTES.map((route) => ({
       id: route.id,
       configured: isCatalogConfigured(route),

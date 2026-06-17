@@ -15,7 +15,15 @@ export type GatewayCatalogId =
   | "credential"
   | "organization"
   | "issuer"
-  | "wallet";
+  | "wallet"
+  | "rp";
+
+/**
+ * Single server-wide MCP (Model Context Protocol) endpoint for the FIDES
+ * Ecosystem Explorer. Served by `api/mcp.ts` (Streamable HTTP). Not per-catalog:
+ * one endpoint exposes tools for every configured catalog.
+ */
+export const GATEWAY_MCP_PATH = "/api/mcp";
 
 export interface GatewayCatalogRoute {
   id: GatewayCatalogId;
@@ -63,6 +71,14 @@ export const GATEWAY_CATALOG_ROUTES: readonly GatewayCatalogRoute[] = [
     detailPathPattern: "/api/public/wallet/{orgId}/{walletId}",
     openApiPath: "/api/public/wallet-api-docs",
     swaggerPath: "/swagger-wallet.html",
+  },
+  {
+    id: "rp",
+    originEnv: "FIDES_RP_CATALOG_ORIGIN",
+    listPath: "/api/public/rp",
+    detailPathPattern: "/api/public/rp/{id}",
+    openApiPath: "/api/public/rp-api-docs",
+    swaggerPath: "/swagger-rp.html",
   },
 ] as const;
 

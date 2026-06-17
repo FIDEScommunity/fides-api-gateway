@@ -75,6 +75,33 @@
           <li><a href="/swagger-wallet.html">Swagger UI</a></li>
         </ul>
       </article>
+      <article class="catalog-card">
+        <h3>Relying parties</h3>
+        <ul>
+          <li><a href="/api/public/rp">List API</a></li>
+          <li><code>GET /api/public/rp/{id}</code></li>
+          <li><code>Filters: readiness, status, country, sector, vcFormat, orgId, ...</code></li>
+          <li><a href="/api/public/rp-api-docs">OpenAPI JSON</a></li>
+          <li><a href="/swagger-rp.html">Swagger UI</a></li>
+        </ul>
+      </article>
+    </div>
+
+    <h2 class="section-title">AI / MCP connector</h2>
+    <div class="card-grid">
+      <article class="catalog-card">
+        <h3>FIDES Ecosystem Explorer (MCP)</h3>
+        <p>
+          Add the catalogs as an "app"/connector in ChatGPT, Claude, and other
+          MCP clients. One Streamable HTTP endpoint exposes tools for every
+          configured catalog, plus generic <code>search</code>/<code>fetch</code>.
+        </p>
+        <ul>
+          <li><code>POST /api/mcp</code> <span class="text-muted">(Streamable HTTP)</span></li>
+          <li>Tools: <code>search_wallets</code>, <code>search_credential_types</code>, <code>search_organizations</code>, <code>search_issuers</code>, <code>search_relying_parties</code> (+ <code>get_*</code>)</li>
+          <li><a href="/api/public/catalogs">Discover endpoint in /api/public/catalogs</a></li>
+        </ul>
+      </article>
     </div>
   </main>
 

@@ -68,6 +68,98 @@ If you add a new proxy under `api/public/` but forget to extend `GATEWAY_CATALOG
 
 ---
 
+## MCP server — AI connector (proof of concept)
+
+The gateway also exposes an **MCP** (Model Context Protocol) server so the FIDES
+Ecosystem Explorer can be added as an "app"/connector in ChatGPT, Claude, and
+other MCP clients. It covers **all configured catalogs**; see
+`docs/MCP-IMPLEMENTATION-PLAN.md` for the design.
+
+- **Endpoint (Streamable HTTP):** `POST https://<gateway>/api/mcp`
+- **Implementation:** `api/mcp.ts` (via `mcp-handler`); tool layer in `lib/`
+  (`catalogClient.ts` + `*Tools.ts`, aggregated by `catalogTools.ts`).
+- **Catalog tools:** `search_wallets`/`get_wallet`,
+  `search_credential_types`/`get_credential_type`,
+  `search_organizations`/`get_organization`, `search_issuers`/`get_issuer`.
+- **Generic tools:** `search` (federated across all catalogs) and `fetch`
+  (retrieve a record by result id) — the shapes ChatGPT uses for connectors /
+  Deep Research, returning canonical URLs for citations.
+- **Requires:** the relevant `FIDES_*_CATALOG_ORIGIN` set per catalog; optional
+  `GATEWAY_PUBLIC_ORIGIN` (defaults to `https://api.fides.community`) for
+  canonical links in tool output. A catalog whose origin env is unset is simply
+  skipped by the generic `search`.
+- Runs **stateless** (no Redis); read-only and unauthenticated like the rest of
+  the gateway.
+
+### Add as a connector
+
+- **Claude** (claude.ai / Desktop): Settings → Connectors → **Add custom
+  connector** → URL `https://<gateway>/api/mcp`.
+- **ChatGPT**: Settings → Apps & Connectors → Advanced → enable **Developer
+  Mode** → **Create** → URL `https://<gateway>/api/mcp`.
+- **Any MCP client** (Cursor, MCP Inspector, API Playground): point it at the
+  same `/api/mcp` URL.
+
+### Verify
+
+```bash
+npm run typecheck
+npx @modelcontextprotocol/inspector   # connect to https://<gateway>/api/mcp, list tools
+```
+
+> Note: the dependency-only `npm audit` warnings come from `@vercel/node`
+> transitive packages (tar/undici), not from the MCP packages.
+
+---
+
+## Conversational interface — homepage assistant (Phase 2)
+
+The gateway also hosts the backend for a **chat assistant** on the FIDES
+homepage. It reuses the *same* catalog tool layer as the MCP server (no
+duplication): `lib/toolRegistry.ts` replays the shared tool registration into an
+in-memory registry, exposes a JSON-Schema view for LLM function calling, and the
+agent calls those handlers directly — no MCP transport internally.
+
+- **Endpoint:** `POST https://<gateway>/api/chat`, body
+  `{ "messages": [{ "role": "user", "content": "..." }] }`.
+- **Response:** `text/event-stream` (SSE) with `token`, `sources`, `done`, and
+  `error` events. `sources` carries citable `{ title, url, type }` detail pages.
+- **Implementation:** `api/chat.ts` (Fetch-style, like `api/mcp.ts`) →
+  `lib/chatAgent.ts` (tool-calling loop) → `lib/llm.ts` (provider adapter) +
+  `lib/rateLimit.ts`.
+- **LLM provider:** OpenAI-compatible `/chat/completions` adapter. Default is
+  **Mistral** (EU/GDPR-conscious); `openai` and `azure` work via env only. The
+  provider key (`LLM_API_KEY`) is **server-side only** — never in WordPress or
+  the browser.
+- **Grounding:** the system prompt forbids answering without tool data and
+  requires linking to canonical `api.fides.community` detail URLs; answers follow
+  the language of the question (NL/EN).
+- **Site-content search (`lib/siteTools.ts`):** an optional `search_site_content`
+  tool answers conceptual/general questions ("what is a business wallet", what
+  FIDES is, manifesto, use cases, news) from the public FIDES website over the
+  WordPress REST API (`/wp-json/wp/v2/pages|posts`), returning short citable page
+  excerpts. **Kill switch:** enabled by default; set `CHAT_SITE_CONTENT_ENABLED=0`
+  to remove the tool entirely (chat falls back to catalog-only answers). Site
+  origin is `FIDES_SITE_ORIGIN` (default `https://fides.community`).
+- **Cost controls (public endpoint):** per-IP rate limit
+  (`CHAT_RATE_LIMIT_PER_MIN`) + daily approximate-token budget
+  (`CHAT_DAILY_TOKEN_BUDGET`). Uses Upstash Redis (REST) when configured,
+  otherwise per-instance in-memory counters. `CHAT_ALLOWED_ORIGINS` restricts the
+  browser origins permitted to call the endpoint.
+- **Usage logging (`lib/chatLog.ts`):** when Upstash is configured, each turn is
+  logged anonymously to a per-day list `chat:log:YYYY-MM-DD` — the question text
+  plus lightweight metadata (`ok`, approx `tokens`, source count + counts per
+  catalog type). **No IP, no session id, and no answer text are stored.** The
+  list auto-expires (`CHAT_LOG_RETENTION_DAYS`, default 90) and is capped per day
+  (`CHAT_LOG_MAX_PER_DAY`, default 5000). Disable with `CHAT_LOG_ENABLED=0`. This
+  is for understanding what visitors ask so the catalogs/site can be improved.
+
+See `.env.example` for all chat env vars and `docs/MCP-IMPLEMENTATION-PLAN.md`
+→ section 4 for the design. The WordPress chat widget lives in the
+`fides-assistant` plugin.
+
+---
+
 ## Step 1 — Organization catalog on Vercel
 
 1. In [Vercel](https://vercel.com): **Add New… → Project** and import the **fides-organization-catalog** GitHub repository.
