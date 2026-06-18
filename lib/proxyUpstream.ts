@@ -1,4 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
+import { classifyClient, trackEvent } from "./matomo";
 
 const HOP_BY_HOP = new Set([
   "connection",
@@ -30,6 +31,49 @@ function splitPathAndQuery(url: string): { path: string; query: string } {
     return { path: url, query: "" };
   }
   return { path: url.slice(0, i), query: url.slice(i) };
+}
+
+const CATALOG_BY_SEGMENT: Record<string, string> = {
+  wallet: "wallet",
+  credentialtype: "credential",
+  organization: "organization",
+  issuer: "issuer",
+  rp: "rp",
+};
+
+/**
+ * Emit a privacy-friendly Matomo usage event for a public API call. Only the
+ * catalog and whether it was a list/detail/docs request are recorded (no ids,
+ * no query string, no IP). Best-effort: never affects the response.
+ */
+function trackApiCall(req: VercelRequest, upstreamPathAndQuery: string): void {
+  const path = upstreamPathAndQuery.split("?")[0] || "";
+  const rest = path.replace(/^\/+/, "").replace(/^api\/public\/?/, "");
+  const segments = rest.split("/").filter(Boolean);
+  const first = segments[0] || "";
+
+  let catalog: string;
+  let kind: string;
+  if (first.includes("api-docs")) {
+    catalog = "docs";
+    kind = "docs";
+  } else {
+    catalog = CATALOG_BY_SEGMENT[first] || "other";
+    kind = segments.length > 1 ? "detail" : "list";
+  }
+
+  const ua =
+    typeof req.headers["user-agent"] === "string"
+      ? req.headers["user-agent"]
+      : undefined;
+
+  trackEvent({
+    category: "API",
+    action: catalog,
+    name: kind,
+    url: `https://api.fides.community/api/public/${catalog}`,
+    client: classifyClient(ua),
+  });
 }
 
 /**
@@ -69,6 +113,9 @@ export async function proxyToBackend(
     });
     return;
   }
+
+  // Best-effort, privacy-friendly usage analytics (counts only, no ids/IP).
+  trackApiCall(req, upstreamPathAndQuery);
 
   const pq = upstreamPathAndQuery.startsWith("/")
     ? upstreamPathAndQuery

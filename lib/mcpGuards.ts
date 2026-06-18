@@ -16,7 +16,66 @@
  * - MCP_RATE_LIMIT_PER_MIN  integer requests/minute/IP (default 120; 0 disables)
  */
 
+import { classifyClient, trackEvent } from "./matomo";
+
 type WebHandler = (req: Request, ...rest: unknown[]) => Response | Promise<Response>;
+
+const MCP_ACTION_URL = "https://api.fides.community/api/mcp";
+
+/**
+ * Best-effort, privacy-friendly usage tracking for an MCP JSON-RPC request.
+ * Reads a clone of the body (the original stream stays intact for the handler)
+ * and emits a Matomo event for initialize / tools/list / tools/call. Only the
+ * method, the tool name and a coarse client label are sent — never arguments.
+ */
+async function trackMcpRequest(req: Request): Promise<void> {
+  if (req.method !== "POST") return;
+  try {
+    const body = (await req.clone().json()) as {
+      method?: unknown;
+      params?: Record<string, unknown>;
+    };
+    const method = typeof body.method === "string" ? body.method : null;
+    if (!method) return;
+
+    const ua = req.headers.get("user-agent");
+    const params = (body.params ?? {}) as Record<string, unknown>;
+
+    if (method === "initialize") {
+      const info = params.clientInfo as { name?: unknown } | undefined;
+      const clientName = typeof info?.name === "string" ? info.name : null;
+      const client = classifyClient(ua, clientName);
+      trackEvent({
+        category: "MCP",
+        action: "initialize",
+        name: client,
+        url: MCP_ACTION_URL,
+        client,
+      });
+    } else if (method === "tools/list") {
+      const client = classifyClient(ua);
+      trackEvent({
+        category: "MCP",
+        action: "tools_list",
+        name: client,
+        url: MCP_ACTION_URL,
+        client,
+      });
+    } else if (method === "tools/call") {
+      const tool = typeof params.name === "string" ? params.name : "unknown";
+      const client = classifyClient(ua);
+      trackEvent({
+        category: "MCP",
+        action: "tools_call",
+        name: tool,
+        url: MCP_ACTION_URL,
+        client,
+      });
+    }
+  } catch {
+    // Never let tracking affect the request.
+  }
+}
 
 const DEFAULT_ALLOWED_ORIGIN_SUFFIXES = [
   "chatgpt.com",
@@ -152,6 +211,10 @@ export function withMcpGuards(handler: WebHandler): WebHandler {
         { "Retry-After": "60" },
       );
     }
+
+    // Fire-and-forget usage tracking. The clone is taken synchronously inside,
+    // so the handler still reads the original body unaffected.
+    void trackMcpRequest(req);
 
     return handler(req, ...rest);
   };

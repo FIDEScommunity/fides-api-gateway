@@ -17,6 +17,7 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.26.0",
     "@vercel/analytics": "^2.0.1",
+    "@vercel/functions": "^3.7.1",
     "mcp-handler": "^1.1.0",
     "zod": "^3.25.76",
     "zod-to-json-schema": "^3.25.2"

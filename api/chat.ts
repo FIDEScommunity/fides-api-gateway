@@ -25,6 +25,7 @@ import {
   type IncomingMessage,
 } from "../lib/chatAgent";
 import { logChatEvent } from "../lib/chatLog";
+import { trackEvent } from "../lib/matomo";
 import { isLlmConfigured } from "../lib/llm";
 import {
   checkDailyBudget,
@@ -182,6 +183,15 @@ export async function POST(req: Request): Promise<Response> {
         // Best-effort usage logging (question + lightweight metadata, no IP,
         // no answer text). Never blocks or breaks the response.
         void logChatEvent({ question, ok, tokens, sources: capturedSources });
+        // Privacy-friendly counter in Matomo (no question text, no IP).
+        trackEvent({
+          category: "Assistant",
+          action: "question",
+          name: ok ? "ok" : "error",
+          value: tokens,
+          url: "https://api.fides.community/api/chat",
+          client: "website",
+        });
         controller.close();
       }
     },
