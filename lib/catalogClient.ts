@@ -300,7 +300,11 @@ export const CATALOGS: Record<CatalogType, CatalogDef> = {
       gatewayUrl(`/api/public/credentialtype/${encodeURIComponent(rawId)}`),
     explorerUrlOf: (c) => credentialExplorerUrl(str(c.id)),
     titleOf: (c) =>
-      str(c.schemaInfo) || str(c.id) || str(c.credentialKind) || "Credential type",
+      str(c.displayName) ||
+      str(c.schemaInfo) ||
+      str(c.id) ||
+      str(c.credentialKind) ||
+      "Credential type",
     rawIdOf: (c) => str(c.id),
   },
   organization: {

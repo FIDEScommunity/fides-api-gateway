@@ -26,6 +26,7 @@ const ORIGIN_ENV = CATALOGS.credential.originEnv;
 
 interface RawCredential {
   id?: string;
+  displayName?: string;
   credentialKind?: string;
   vcFormat?: string;
   authority?: string;
@@ -49,6 +50,9 @@ function summarize(c: RawCredential): Record<string, unknown> {
   const id = c.id ?? "";
   return {
     id,
+    // Human-readable name (e.g. "LPID Attestation"); preferred over the id as
+    // the citable source label. Falls back to the id when absent.
+    displayName: c.displayName,
     description: c.schemaInfo,
     credentialKind: c.credentialKind,
     vcFormat: c.vcFormat,
