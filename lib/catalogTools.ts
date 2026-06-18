@@ -10,6 +10,7 @@ import { registerOrganizationTools } from "./organizationTools";
 import { registerIssuerTools } from "./issuerTools";
 import { registerRpTools } from "./rpTools";
 import { registerGenericTools } from "./genericTools";
+import { registerVocabularyTools } from "./vocabularyTools";
 import { isSiteContentEnabled, registerSiteTools } from "./siteTools";
 
 export function registerAllTools(server: ToolServer): void {
@@ -21,6 +22,8 @@ export function registerAllTools(server: ToolServer): void {
   registerRpTools(server);
   // Generic federated search/fetch (ChatGPT connector / Deep Research shape).
   registerGenericTools(server);
+  // Shared vocabulary/glossary lookups (definitions behind the catalog terms).
+  registerVocabularyTools(server);
   // Optional WordPress site-content search for conceptual questions.
   // Kill switch: CHAT_SITE_CONTENT_ENABLED=0 removes this tool entirely.
   if (isSiteContentEnabled()) {
