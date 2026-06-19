@@ -85,11 +85,16 @@ export function trackEvent(ev: MatomoEvent): void {
 
   const endpoint = `${cfg.url}/matomo.php?${params.toString()}`;
 
-  const task = fetch(endpoint, { method: "GET", keepalive: true })
+  const task = fetch(endpoint, {
+    method: "GET",
+    keepalive: true,
+    headers: { "User-Agent": "FIDES-Gateway/1.0 (+https://api.fides.community)" },
+  })
     .then(() => undefined)
     .catch(() => undefined);
 
   try {
+    // On Vercel, this keeps the function alive until the tracking hit completes.
     waitUntil(task);
   } catch {
     // Not in a Vercel request context (e.g. local/tests): let it run detached.
