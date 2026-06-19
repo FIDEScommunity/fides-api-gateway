@@ -32,6 +32,8 @@ const CACHE_TTL_MS = 60 * 60 * 1000;
 interface VocabularyTerm {
   description?: string;
   url?: string;
+  /** Synonyms / alternative spellings that resolve to this term. */
+  aliases?: string[];
 }
 
 interface Vocabulary {
@@ -94,24 +96,48 @@ interface MatchedTerm {
   term: string;
   description?: string;
   url?: string;
+  aliases?: string[];
 }
 
-/** Resolve a requested term against the glossary (case-insensitive). */
+/**
+ * Resolve a requested term against the glossary (case-insensitive). Matching
+ * considers each term's canonical key AND its `aliases`, so synonyms resolve to
+ * the same definition. Exact matches win over substring matches.
+ */
 function matchTerm(
   vocab: Vocabulary,
   requested: string,
 ): { match?: MatchedTerm; suggestions: string[] } {
-  const keys = Object.keys(vocab.terms);
   const needle = requested.trim().toLowerCase();
 
-  // 1) exact key match (case-insensitive).
-  const exact = keys.find((k) => k.toLowerCase() === needle);
+  // Every searchable name (canonical key + aliases) mapped back to its key.
+  const candidates = Object.entries(vocab.terms).flatMap(([key, term]) =>
+    [key, ...(term.aliases ?? [])].map((name) => ({ key, name })),
+  );
+
+  // De-duplicate a list of candidate hits by their canonical key, in order.
+  const uniqueKeys = (hits: { key: string }[]): string[] => {
+    const seen = new Set<string>();
+    const out: string[] = [];
+    for (const h of hits) {
+      if (!seen.has(h.key)) {
+        seen.add(h.key);
+        out.push(h.key);
+      }
+    }
+    return out;
+  };
+
+  // 1) exact match (case-insensitive) on a key or alias.
+  const exact = candidates.find((c) => c.name.toLowerCase() === needle);
   if (exact) {
-    return { match: { term: exact, ...vocab.terms[exact] }, suggestions: [] };
+    return { match: { term: exact.key, ...vocab.terms[exact.key] }, suggestions: [] };
   }
 
-  // 2) substring match on the key; first as the answer, rest as suggestions.
-  const contains = keys.filter((k) => k.toLowerCase().includes(needle));
+  // 2) substring match on a key or alias; first as the answer, rest as suggestions.
+  const contains = uniqueKeys(
+    candidates.filter((c) => c.name.toLowerCase().includes(needle)),
+  );
   if (contains.length > 0) {
     const [first, ...rest] = contains;
     return {
