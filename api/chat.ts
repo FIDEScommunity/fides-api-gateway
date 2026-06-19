@@ -99,6 +99,7 @@ function parseMessages(raw: unknown): IncomingMessage[] | null {
 }
 
 export async function POST(req: Request): Promise<Response> {
+  const reqStart = performance.now();
   if (!isLlmConfigured()) {
     return jsonResponse(req, 503, {
       error: "Chat is not configured",
@@ -122,7 +123,9 @@ export async function POST(req: Request): Promise<Response> {
   }
 
   const ip = clientIp(req);
+  const tRate0 = performance.now();
   const rate = await checkRateLimit(ip);
+  const rateMs = Math.round(performance.now() - tRate0);
   if (!rate.allowed) {
     return jsonResponse(
       req,
@@ -131,7 +134,9 @@ export async function POST(req: Request): Promise<Response> {
       { "Retry-After": String(rate.retryAfterSeconds ?? 60) },
     );
   }
+  const tBudget0 = performance.now();
   const budget = await checkDailyBudget();
+  const budgetMs = Math.round(performance.now() - tBudget0);
   if (!budget.allowed) {
     return jsonResponse(
       req,
@@ -157,12 +162,16 @@ export async function POST(req: Request): Promise<Response> {
       let capturedSources: ChatSource[] = [];
       let ok = false;
       let tokens = 0;
+      let firstTokenAt = 0;
 
       try {
         const result = await runChatTurn(
           messages,
           {
-            onToken: (text) => send("token", { text }),
+            onToken: (text) => {
+              if (!firstTokenAt) firstTokenAt = performance.now();
+              send("token", { text });
+            },
             onSources: (sources) => {
               capturedSources = sources;
               send("sources", { sources });
@@ -173,7 +182,21 @@ export async function POST(req: Request): Promise<Response> {
         tokens = result.approxTokens;
         await recordTokenUsage(tokens);
         ok = true;
-        send("done", {});
+        const timings = {
+          // Pre-stream blocking work (Upstash round-trips).
+          rateMs,
+          budgetMs,
+          // Time from request start to the first streamed token.
+          ttftMs: firstTokenAt
+            ? Math.round(firstTokenAt - reqStart)
+            : null,
+          // Whole handler wall time.
+          totalMs: Math.round(performance.now() - reqStart),
+          // Per-round model time + per-tool execution time.
+          agent: result.timings,
+        };
+        console.log("[fides-timing] chat", JSON.stringify(timings));
+        send("done", { timings });
       } catch (e) {
         send("error", {
           message:

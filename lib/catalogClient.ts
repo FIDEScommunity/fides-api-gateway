@@ -156,6 +156,7 @@ export async function upstreamGet(
     };
   }
   const pq = pathAndQuery.startsWith("/") ? pathAndQuery : `/${pathAndQuery}`;
+  const started = performance.now();
   try {
     const res = await fetch(`${origin}${pq}`, {
       headers: { Accept: "application/json" },
@@ -166,8 +167,17 @@ export async function upstreamGet(
     } catch {
       data = null;
     }
+    // Per-upstream timing so we can see catalog cold starts / slow responses.
+    console.log(
+      `[fides-timing] upstream ${Math.round(performance.now() - started)}ms ` +
+        `status=${res.status} ${originEnv} ${pq}`,
+    );
     return { ok: res.ok, status: res.status, data };
   } catch (e) {
+    console.log(
+      `[fides-timing] upstream ${Math.round(performance.now() - started)}ms ` +
+        `FAILED ${originEnv} ${pq}`,
+    );
     return {
       ok: false,
       status: 502,

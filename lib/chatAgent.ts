@@ -58,10 +58,24 @@ export interface ChatTurnCallbacks {
   onSources?: (sources: ChatSource[]) => void;
 }
 
+/** Per-turn timing breakdown for latency diagnostics. */
+export interface ChatTimings {
+  /** Total time inside runChatTurn (model + tools). */
+  totalMs: number;
+  rounds: {
+    round: number;
+    /** Wall time of the streamed LLM completion for this round. */
+    llmMs: number;
+    /** Per-tool execution time for tool calls issued in this round. */
+    tools: { name: string; ms: number }[];
+  }[];
+}
+
 export interface ChatTurnResult {
   text: string;
   sources: ChatSource[];
   approxTokens: number;
+  timings: ChatTimings;
 }
 
 export interface IncomingMessage {
@@ -159,8 +173,12 @@ export async function runChatTurn(
   let approxChars = 0;
   let approxTokens = 0;
 
+  const turnStart = performance.now();
+  const roundTimings: ChatTimings["rounds"] = [];
+
   for (let round = 0; round < MAX_TOOL_ROUNDS; round++) {
     const isLastRound = round === MAX_TOOL_ROUNDS - 1;
+    const llmStart = performance.now();
     const result = await streamChatCompletion(
       provider,
       convo,
@@ -169,12 +187,15 @@ export async function runChatTurn(
       callbacks.onToken,
       options?.signal,
     );
+    const llmMs = Math.round(performance.now() - llmStart);
+    const toolTimings: { name: string; ms: number }[] = [];
 
     approxChars += result.content.length;
     approxTokens += approxTokensFromUsage(result.usage, result.content.length);
 
     if (result.toolCalls.length === 0 || isLastRound) {
       finalText += result.content;
+      roundTimings.push({ round, llmMs, tools: toolTimings });
       break;
     }
 
@@ -192,7 +213,12 @@ export async function runChatTurn(
       } catch {
         args = {};
       }
+      const toolStart = performance.now();
       const toolResult = await registry.call(call.function.name, args);
+      toolTimings.push({
+        name: call.function.name,
+        ms: Math.round(performance.now() - toolStart),
+      });
       const text = toolResult.content.map((c) => c.text).join("\n");
       approxChars += text.length;
 
@@ -209,7 +235,15 @@ export async function runChatTurn(
         content: text,
       });
     }
+
+    roundTimings.push({ round, llmMs, tools: toolTimings });
   }
+
+  const timings: ChatTimings = {
+    totalMs: Math.round(performance.now() - turnStart),
+    rounds: roundTimings,
+  };
+  console.log("[fides-timing] agent", JSON.stringify(timings));
 
   const sourceList = Array.from(sources.values());
   if (callbacks.onSources && sourceList.length > 0) {
@@ -220,5 +254,6 @@ export async function runChatTurn(
     text: finalText,
     sources: sourceList,
     approxTokens: approxTokens || Math.ceil(approxChars / 4),
+    timings,
   };
 }
