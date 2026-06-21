@@ -16,7 +16,8 @@ export type GatewayCatalogId =
   | "organization"
   | "issuer"
   | "wallet"
-  | "rp";
+  | "rp"
+  | "usecase";
 
 /**
  * Single server-wide MCP (Model Context Protocol) endpoint for the FIDES
@@ -79,6 +80,14 @@ export const GATEWAY_CATALOG_ROUTES: readonly GatewayCatalogRoute[] = [
     detailPathPattern: "/api/public/rp/{id}",
     openApiPath: "/api/public/rp-api-docs",
     swaggerPath: "/swagger-rp.html",
+  },
+  {
+    id: "usecase",
+    originEnv: "FIDES_USE_CASE_CATALOG_ORIGIN",
+    listPath: "/api/public/usecase",
+    detailPathPattern: "/api/public/usecase/{id}",
+    openApiPath: "/api/public/usecase-api-docs",
+    swaggerPath: "/swagger-usecase.html",
   },
 ] as const;
 

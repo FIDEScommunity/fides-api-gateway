@@ -39,6 +39,7 @@ const CATALOG_BY_SEGMENT: Record<string, string> = {
   organization: "organization",
   issuer: "issuer",
   rp: "rp",
+  usecase: "usecase",
 };
 
 /**

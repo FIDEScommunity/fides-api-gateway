@@ -95,6 +95,7 @@ export const EXPLORER_PATHS = {
   credential: "/ecosystem-explorer/credential-catalog/",
   issuer: "/ecosystem-explorer/issuer-catalog/",
   rp: "/ecosystem-explorer/relying-party-catalog/",
+  usecase: "/use-cases/",
   organization: "/organizations/",
 } as const;
 
@@ -121,6 +122,10 @@ export function issuerExplorerUrl(id: string): string {
 
 export function rpExplorerUrl(id: string): string {
   return explorerDeepLink(EXPLORER_PATHS.rp, "rp", id);
+}
+
+export function useCaseExplorerUrl(id: string): string {
+  return explorerDeepLink(EXPLORER_PATHS.usecase, "usecase", id);
 }
 
 export function organizationExplorerUrl(id: string): string {
@@ -248,7 +253,8 @@ export type CatalogType =
   | "credential"
   | "organization"
   | "issuer"
-  | "rp";
+  | "rp"
+  | "usecase";
 
 export interface CatalogDef {
   type: CatalogType;
@@ -357,6 +363,20 @@ export const CATALOGS: Record<CatalogType, CatalogDef> = {
     explorerUrlOf: (r) => rpExplorerUrl(str(r.id)),
     titleOf: (r) => str(r.name) || str(r.id) || "Relying party",
     rawIdOf: (r) => str(r.id),
+  },
+  usecase: {
+    type: "usecase",
+    originEnv: "FIDES_USE_CASE_CATALOG_ORIGIN",
+    listPath: "/api/public/usecase",
+    searchPathAndQuery: (q, size) =>
+      `/api/public/usecase?search=${encodeURIComponent(q)}&size=${size}`,
+    detailPathAndQuery: (rawId) =>
+      `/api/public/usecase/${encodeURIComponent(rawId)}`,
+    gatewayDetailUrl: (rawId) =>
+      gatewayUrl(`/api/public/usecase/${encodeURIComponent(rawId)}`),
+    explorerUrlOf: (u) => useCaseExplorerUrl(str(u.id)),
+    titleOf: (u) => str(u.title) || str(u.id) || "Use case",
+    rawIdOf: (u) => str(u.id),
   },
 };
 
