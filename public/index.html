@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="FIDES public catalog APIs on api.fides.community — credential, organization, issuer, and wallet JSON APIs with OpenAPI and Swagger.">
-  <title>FIDES Catalog API Gateway</title>
+  <meta name="description" content="The FIDES API provides programmatic access to organizations, wallets, issuers, credential types, schemas and trust ecosystems — an open discovery layer for digital trust.">
+  <title>FIDES API — api.fides.community</title>
   <link rel="icon" href="https://fides.community/app/uploads/2025/05/favicon.png" sizes="32x32">
   <link rel="icon" href="https://fides.community/app/uploads/2025/05/favicon.png" sizes="192x192">
   <link rel="apple-touch-icon" href="https://fides.community/app/uploads/2025/05/favicon.png">
@@ -29,73 +29,192 @@
 
   <main>
     <section class="hero">
-      <h1>FIDES Catalog API Gateway</h1>
+      <h1>FIDES API</h1>
+      <p class="hero-tagline">
+        Build discovery into wallets, applications, AI agents and digital trust platforms.
+      </p>
       <p>
-        Read-only JSON APIs for the FIDES community catalogs. This host proxies requests to each catalog deployment. Use it for integrations and tooling.
+        The FIDES API provides programmatic access to data in the FIDES Ecosystem Explorer. It enables wallets, applications, platforms and AI agents to dynamically discover organizations, wallets, issuers, credential types, schemas and trust ecosystems.
+      </p>
+      <p>
+        Instead of hardcoding issuer endpoints, credential definitions, schemas or other ecosystem information, applications can use the FIDES API as a discovery layer for digital trust.
       </p>
       <a class="cta-primary" href="/api/public/catalogs">GET /api/public/catalogs — Discover configured catalogs</a>
     </section>
 
-    <h2 class="section-title">Catalogs</h2>
-    <div class="card-grid">
-      <article class="catalog-card">
-        <h3>Credential types</h3>
-        <ul>
-          <li><a href="/api/public/credentialtype">List API</a></li>
-          <li><code>GET /api/public/credentialtype/{id}</code></li>
-          <li><a href="/api/public/credential-api-docs">OpenAPI JSON</a></li>
-          <li><a href="/swagger-credentialtype.html">Swagger UI</a></li>
-        </ul>
-      </article>
-      <article class="catalog-card">
-        <h3>Organizations</h3>
-        <ul>
-          <li><a href="/api/public/organization">List API</a></li>
-          <li><code>GET /api/public/organization/{id}</code></li>
-          <li><a href="/api/public/organization-api-docs">OpenAPI JSON</a></li>
-          <li><a href="/swagger-organization.html">Swagger UI</a></li>
-        </ul>
-      </article>
-      <article class="catalog-card">
-        <h3>Issuers</h3>
-        <ul>
-          <li><a href="/api/public/issuer">List API</a></li>
-          <li><code>GET /api/public/issuer/{id}</code></li>
-          <li><code>Filters: subjectType, tags, country, vcFormat, orgId, ...</code></li>
-          <li><a href="/api/public/issuer-api-docs">OpenAPI JSON</a></li>
-          <li><a href="/swagger-issuer.html">Swagger UI</a></li>
-        </ul>
-      </article>
-      <article class="catalog-card">
-        <h3>Wallets</h3>
-        <ul>
-          <li><a href="/api/public/wallet">List API</a> <span class="text-muted">(paginated)</span></li>
-          <li><code>GET /api/public/wallet/{orgId}/{walletId}</code></li>
-          <li><a href="/api/public/wallet-api-docs">OpenAPI JSON</a></li>
-          <li><a href="/swagger-wallet.html">Swagger UI</a></li>
-        </ul>
-      </article>
-      <article class="catalog-card">
-        <h3>Relying parties</h3>
-        <ul>
-          <li><a href="/api/public/rp">List API</a></li>
-          <li><code>GET /api/public/rp/{id}</code></li>
-          <li><code>Filters: readiness, status, country, sector, vcFormat, orgId, ...</code></li>
-          <li><a href="/api/public/rp-api-docs">OpenAPI JSON</a></li>
-          <li><a href="/swagger-rp.html">Swagger UI</a></li>
-        </ul>
-      </article>
-      <article class="catalog-card">
-        <h3>Use cases</h3>
-        <ul>
-          <li><a href="/api/public/usecase">List API</a></li>
-          <li><code>GET /api/public/usecase/{id}</code></li>
-          <li><code>Filters: country, sector, vcFormat, interactionMode, tag, productionDeployment, ...</code></li>
-          <li><a href="/api/public/usecase-api-docs">OpenAPI JSON</a></li>
-          <li><a href="/swagger-usecase.html">Swagger UI</a></li>
-        </ul>
-      </article>
-    </div>
+    <section class="intro-section">
+      <h2>Open &amp; Federated by Design</h2>
+      <p>
+        The FIDES API is designed around the principles of data ownership, federated publication and federated discovery.
+      </p>
+      <p>
+        Organizations remain in control of their own information and are responsible for publishing and maintaining it. Rather than creating a centralized registry owned by a single organization, FIDES enables ecosystem information to be published and discovered through an open, distributed architecture.
+      </p>
+      <p>
+        The architecture is intentionally designed to avoid vendor lock-in. Although the FIDES Ecosystem Explorer is one implementation of this discovery layer, the same open specifications can be implemented by other organizations, communities and ecosystem operators, enabling multiple interoperable discovery services.
+      </p>
+    </section>
+
+    <section class="intro-section intro-section--highlight">
+      <h2>Coming Soon</h2>
+      <h3>TS11 Schema Discovery</h3>
+      <p>
+        Support for the TS11 Schema Discovery specification from the European Digital Identity Wallet Architecture and Reference Framework (ARF) is currently under development and will be added to the FIDES API in the coming weeks.
+      </p>
+      <p>
+        This will enable EUDI Wallet providers and relying parties to discover standardized credential types, attestation schemas and related metadata through a standardized interface.
+      </p>
+      <p>
+        Beyond TS11, the FIDES API provides broader discovery capabilities for organizations, issuers, wallets, trust ecosystems and other ecosystem metadata, making it easier to build interoperable digital trust solutions across multiple ecosystems worldwide.
+      </p>
+    </section>
+
+    <section class="intro-section">
+      <h2>Use Cases</h2>
+      <div class="use-case-grid">
+        <article class="use-case-card">
+          <h3>Discover and request credentials from a wallet</h3>
+          <p>
+            Personal and business wallet providers can use the FIDES API to support wallet-initiated credential discovery and credential request flows.
+          </p>
+          <p>
+            Instead of hardcoding issuer endpoints, wallets can dynamically discover available credential types, trusted issuers and the information required to request credentials.
+          </p>
+          <p>
+            This becomes increasingly important as wallets need to support multiple issuers, credential types and ecosystems across countries and regions.
+          </p>
+        </article>
+        <article class="use-case-card">
+          <h3>Reuse existing credential templates</h3>
+          <p>
+            Business wallet providers that offer issuer functionality can discover and reuse existing credential types, schemas and metadata instead of creating new templates from scratch.
+          </p>
+          <p>
+            Reusing established credential models reduces fragmentation, improves interoperability and simplifies integration for wallets, issuers, verifiers and relying parties.
+          </p>
+        </article>
+        <article class="use-case-card">
+          <h3>Configure credential queries</h3>
+          <p>
+            Business wallet providers that offer verifier functionality can dynamically discover credential types, schemas and metadata when configuring credential requests, including DCQL queries.
+          </p>
+          <p>
+            This enables applications to support new credential types and ecosystems without continuously updating hardcoded definitions.
+          </p>
+        </article>
+        <article class="use-case-card">
+          <h3>Discover trusted organizations</h3>
+          <p>
+            Applications can discover organizations based on ecosystem roles, identifiers, supported standards, certifications, trust marks, countries or other metadata.
+          </p>
+          <p>
+            This enables users to find issuers, relying parties, wallet providers, identity verification providers, conformity assessment bodies, certification bodies, scheme owners and many other participants in the digital trust ecosystem.
+          </p>
+        </article>
+        <article class="use-case-card">
+          <h3>Discover trusted wallets</h3>
+          <p>
+            Issuers, verifiers and relying parties can discover wallet providers based on supported credential formats, interoperability protocols, ecosystems, certifications and other capabilities.
+          </p>
+          <p>
+            This helps organizations determine which wallets they want to integrate with, recommend or support.
+          </p>
+        </article>
+        <article class="use-case-card">
+          <h3>Discover trust ecosystems</h3>
+          <p>
+            Applications can discover digital trust ecosystems, interoperability frameworks, trust schemes and their associated governance, participants and trust establishment mechanisms.
+          </p>
+          <p>
+            This helps organizations understand how ecosystems relate to one another and which standards, governance models and trust anchors they rely on.
+          </p>
+        </article>
+        <article class="use-case-card">
+          <h3>Discover conformity credentials and trust marks</h3>
+          <p>
+            Applications can search for organizations, products, certificates, conformity credentials, trust marks, trusted issuers and certification schemes.
+          </p>
+          <p>
+            This supports use cases where trust is established not only through identity credentials, but also through certifications, conformity assessments and qualified trust services.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <section class="intro-section intro-section--apis">
+      <h2>Available APIs</h2>
+      <p>The FIDES API continues to expand. Live endpoints are listed below with links to OpenAPI specs and Swagger UI.</p>
+
+      <h3 class="api-subsection-title">Live</h3>
+      <div class="card-grid">
+        <article class="catalog-card">
+          <h3>Credential types</h3>
+          <ul>
+            <li><a href="/api/public/credentialtype">List API</a></li>
+            <li><code>GET /api/public/credentialtype/{id}</code></li>
+            <li><a href="/api/public/credential-api-docs">OpenAPI JSON</a></li>
+            <li><a href="/swagger-credentialtype.html">Swagger UI</a></li>
+          </ul>
+        </article>
+        <article class="catalog-card">
+          <h3>Organizations</h3>
+          <ul>
+            <li><a href="/api/public/organization">List API</a></li>
+            <li><code>GET /api/public/organization/{id}</code></li>
+            <li><a href="/api/public/organization-api-docs">OpenAPI JSON</a></li>
+            <li><a href="/swagger-organization.html">Swagger UI</a></li>
+          </ul>
+        </article>
+        <article class="catalog-card">
+          <h3>Issuers</h3>
+          <ul>
+            <li><a href="/api/public/issuer">List API</a></li>
+            <li><code>GET /api/public/issuer/{id}</code></li>
+            <li><code>Filters: subjectType, tags, country, vcFormat, orgId, ...</code></li>
+            <li><a href="/api/public/issuer-api-docs">OpenAPI JSON</a></li>
+            <li><a href="/swagger-issuer.html">Swagger UI</a></li>
+          </ul>
+        </article>
+        <article class="catalog-card">
+          <h3>Wallets</h3>
+          <ul>
+            <li><a href="/api/public/wallet">List API</a> <span class="text-muted">(paginated)</span></li>
+            <li><code>GET /api/public/wallet/{orgId}/{walletId}</code></li>
+            <li><a href="/api/public/wallet-api-docs">OpenAPI JSON</a></li>
+            <li><a href="/swagger-wallet.html">Swagger UI</a></li>
+          </ul>
+        </article>
+        <article class="catalog-card">
+          <h3>Relying parties</h3>
+          <ul>
+            <li><a href="/api/public/rp">List API</a></li>
+            <li><code>GET /api/public/rp/{id}</code></li>
+            <li><code>Filters: readiness, status, country, sector, vcFormat, orgId, ...</code></li>
+            <li><a href="/api/public/rp-api-docs">OpenAPI JSON</a></li>
+            <li><a href="/swagger-rp.html">Swagger UI</a></li>
+          </ul>
+        </article>
+        <article class="catalog-card">
+          <h3>Use cases</h3>
+          <ul>
+            <li><a href="/api/public/usecase">List API</a></li>
+            <li><code>GET /api/public/usecase/{id}</code></li>
+            <li><code>Filters: country, sector, vcFormat, interactionMode, tag, productionDeployment, ...</code></li>
+            <li><a href="/api/public/usecase-api-docs">OpenAPI JSON</a></li>
+            <li><a href="/swagger-usecase.html">Swagger UI</a></li>
+          </ul>
+        </article>
+      </div>
+
+      <h3 class="api-subsection-title">Planned</h3>
+      <ul class="api-list">
+        <li>Trust Ecosystems API</li>
+        <li>Conformity API</li>
+        <li>Glossary API</li>
+        <li>Awards API</li>
+        <li>News &amp; Events API</li>
+      </ul>
+    </section>
 
     <h2 class="section-title">AI / MCP connector</h2>
     <div class="card-grid">

@@ -96,10 +96,136 @@ main {
   letter-spacing: -0.02em;
 }
 
+.hero-tagline {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text) !important;
+  max-width: none !important;
+}
+
 .hero p {
-  margin: 0 0 1.25rem;
+  margin: 0 0 1rem;
   color: var(--text-muted);
-  max-width: 52ch;
+  max-width: 72ch;
+}
+
+.hero p:last-of-type {
+  margin-bottom: 1.25rem;
+}
+
+.intro-section {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  padding: 1.5rem 1.4rem;
+  margin-bottom: 1.25rem;
+}
+
+.intro-section h2 {
+  margin: 0 0 0.85rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.intro-section h3 {
+  margin: 0 0 0.65rem;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.intro-section p {
+  margin: 0 0 0.85rem;
+  color: var(--text-muted);
+}
+
+.intro-section p:last-child {
+  margin-bottom: 0;
+}
+
+.intro-section--highlight {
+  border-color: rgba(10, 110, 242, 0.35);
+  background: linear-gradient(180deg, #f5f9ff 0%, #ffffff 100%);
+}
+
+.use-case-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-top: 0.25rem;
+}
+
+.use-case-card {
+  background: var(--body-bg);
+  border-radius: calc(var(--radius) - 2px);
+  padding: 1rem 1.05rem;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.use-case-card h3 {
+  margin: 0 0 0.6rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.use-case-card p {
+  margin: 0 0 0.65rem;
+  font-size: 0.92rem;
+}
+
+.use-case-card p:last-child {
+  margin-bottom: 0;
+}
+
+.intro-section--apis .card-grid {
+  margin-bottom: 0.5rem;
+}
+
+.intro-section--apis .catalog-card {
+  box-shadow: none;
+  background: var(--body-bg);
+}
+
+.api-subsection-title {
+  margin: 1.25rem 0 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.api-subsection-title:first-of-type {
+  margin-top: 0.25rem;
+}
+
+.api-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.4rem 1rem;
+}
+
+.api-list li {
+  font-weight: 500;
+  color: var(--text-muted);
+  padding-left: 0.85rem;
+  position: relative;
+}
+
+.api-list li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.55em;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #cbd5e1;
 }
 
 .cta-primary {
