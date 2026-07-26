@@ -1,0 +1,112 @@
+name: MCP Health Check
+
+on:
+  schedule:
+    # Daily at 5:00 UTC, before the catalog crawls at 6:00 so a failure points at
+    # the gateway rather than at a crawl that is still running.
+    - cron: '0 5 * * *'
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'lib/**'
+      - 'api/**'
+      - 'scripts/health-check.mjs'
+      - '.github/workflows/health-check.yml'
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  health-check:
+    name: Check public MCP tools
+    runs-on: ubuntu-latest
+    if: github.repository == 'FIDEScommunity/fides-api-gateway'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+
+      - name: Run health check
+        id: health
+        run: node scripts/health-check.mjs
+
+      - name: Upload health report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: MCP health report - ${{ github.run_id }}
+          path: |
+            health-report.json
+            health-summary.md
+
+      # Keep a single tracking issue: open or update it while the server is
+      # degraded, close it once a later run is green, so a silent regression
+      # cannot sit unnoticed the way the RP catalog outage did.
+      - name: Report status via tracking issue
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const title = 'MCP health check failing';
+            const failed = '${{ steps.health.outcome }}' !== 'success';
+            const summary = fs.existsSync('health-summary.md')
+              ? fs.readFileSync('health-summary.md', 'utf8')
+              : 'No summary produced; the run failed before writing a report.';
+
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+            });
+            const existing = issues.find(i => i.title === title);
+            const runUrl =
+              `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}` +
+              `/actions/runs/${context.runId}`;
+            const body =
+              `Run: ${new Date().toISOString()}\n\n${summary}\n\n[Workflow run](${runUrl})`;
+
+            if (failed) {
+              if (existing) {
+                await github.rest.issues.update({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: existing.number,
+                  body,
+                });
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: existing.number,
+                  body: `Still failing.\n\n${summary}\n\n[Workflow run](${runUrl})`,
+                });
+              } else {
+                await github.rest.issues.create({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  title,
+                  body,
+                });
+              }
+            } else if (existing) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existing.number,
+                body: `Recovered: all checks passed.\n\n[Workflow run](${runUrl})`,
+              });
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existing.number,
+                state: 'closed',
+              });
+            }
