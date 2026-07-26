@@ -25,6 +25,19 @@ const PER_TYPE = 4;
 const MAX_RESULTS = 6;
 const MAX_TEXT = 700;
 
+/**
+ * The WordPress host firewall answers 403 to unrecognized datacenter traffic,
+ * which silently reduced this tool to zero results. Reuse the agent string the
+ * FIDES automation workflows already use against fides.community, since that is
+ * the value allow-listed by the host. Overridable per environment.
+ */
+const DEFAULT_USER_AGENT = "FIDES-Catalog-Automation/1.0";
+
+function siteUserAgent(): string {
+  const v = (process.env.FIDES_SITE_USER_AGENT ?? "").trim();
+  return v || DEFAULT_USER_AGENT;
+}
+
 /** Master switch — defaults ON, disable with CHAT_SITE_CONTENT_ENABLED=0. */
 export function isSiteContentEnabled(): boolean {
   const v = (process.env.CHAT_SITE_CONTENT_ENABLED ?? "").trim().toLowerCase();
@@ -98,8 +111,16 @@ async function searchWp(
     `&per_page=${PER_TYPE}` +
     `&_fields=${encodeURIComponent("title,excerpt,content,link")}`;
   try {
-    const res = await fetch(url, { headers: { Accept: "application/json" } });
-    if (!res.ok) return [];
+    const res = await fetch(url, {
+      headers: {
+        Accept: "application/json",
+        "User-Agent": siteUserAgent(),
+      },
+    });
+    if (!res.ok) {
+      console.log(`[fides-site] wp ${kind} status=${res.status} query=${query}`);
+      return [];
+    }
     const data = (await res.json()) as unknown;
     if (!Array.isArray(data)) return [];
     const out: SiteResult[] = [];
@@ -116,7 +137,11 @@ async function searchWp(
       out.push({ title, url: link, text, type: "page" });
     }
     return out;
-  } catch {
+  } catch (e) {
+    console.log(
+      `[fides-site] wp ${kind} FAILED query=${query} ` +
+        `${e instanceof Error ? e.message : String(e)}`,
+    );
     return [];
   }
 }

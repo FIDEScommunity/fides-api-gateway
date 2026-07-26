@@ -24,6 +24,7 @@ import {
   readOnlyTool,
   originFor,
   parseResultId,
+  sanitizeRecord,
   type ToolServer,
   upstreamGet,
 } from "./catalogClient";
@@ -125,10 +126,11 @@ export function registerGenericTools(server: ToolServer): void {
         });
       }
       const item = (result.data ?? {}) as Record<string, unknown>;
+      const clean = sanitizeRecord(item);
       return jsonContent({
         id: args.id,
         title: def.titleOf(item),
-        text: JSON.stringify(item),
+        text: JSON.stringify(clean),
         url: def.explorerUrlOf(item),
         apiUrl: def.gatewayDetailUrl(parsed.rawId),
         metadata: { type: parsed.type },

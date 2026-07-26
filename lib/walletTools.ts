@@ -15,6 +15,7 @@ import {
   jsonContent,
   normalizePage,
   readOnlyTool,
+  sanitizeRecord,
   type ToolServer,
   upstreamGet,
   walletExplorerUrl,
@@ -223,7 +224,7 @@ export function registerWalletTools(server: ToolServer): void {
           requested: { orgId: args.orgId, walletId: args.walletId },
         });
       }
-      const wallet = result.data as RawWallet;
+      const wallet = sanitizeRecord(result.data as RawWallet);
       return jsonContent({
         ...wallet,
         detailUrl: walletExplorerUrl(args.walletId, wallet.type),

@@ -11,6 +11,7 @@ import {
   jsonContent,
   normalizePage,
   readOnlyTool,
+  sanitizeRecord,
   useCaseExplorerUrl,
   type ToolServer,
   upstreamGet,
@@ -197,7 +198,7 @@ export function registerUseCaseTools(server: ToolServer): void {
           requested: { id: args.id },
         });
       }
-      const useCase = result.data as RawUseCase;
+      const useCase = sanitizeRecord(result.data as RawUseCase);
       return jsonContent({
         ...useCase,
         detailUrl: useCaseExplorerUrl(args.id),

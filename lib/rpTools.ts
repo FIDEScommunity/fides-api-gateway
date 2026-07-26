@@ -12,6 +12,7 @@ import {
   normalizePage,
   readOnlyTool,
   rpExplorerUrl,
+  sanitizeRecord,
   type ToolServer,
   upstreamGet,
 } from "./catalogClient";
@@ -211,7 +212,7 @@ export function registerRpTools(server: ToolServer): void {
           requested: { id: args.id },
         });
       }
-      const rp = result.data as RawRelyingParty;
+      const rp = sanitizeRecord(result.data as RawRelyingParty);
       return jsonContent({
         ...rp,
         detailUrl: rpExplorerUrl(args.id),

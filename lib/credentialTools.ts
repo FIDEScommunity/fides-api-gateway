@@ -18,6 +18,7 @@ import {
   jsonContent,
   normalizePage,
   readOnlyTool,
+  sanitizeRecord,
   type ToolServer,
   upstreamGet,
 } from "./catalogClient";
@@ -219,7 +220,7 @@ export function registerCredentialTools(server: ToolServer): void {
           requested: { id: args.id },
         });
       }
-      const credential = result.data as RawCredential;
+      const credential = sanitizeRecord(result.data as RawCredential);
       return jsonContent({
         ...credential,
         detailUrl: credentialExplorerUrl(args.id),

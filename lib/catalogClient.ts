@@ -194,6 +194,49 @@ export async function upstreamGet(
   }
 }
 
+/**
+ * Internal/provenance/telemetry fields that our crawlers attach to catalog
+ * records but that are irrelevant to the user's request. OpenAI's app review
+ * inspects actual tool outputs and rejects apps that return undisclosed
+ * operational metadata (crawl timestamps, source paths, etc.), so we strip
+ * these before returning any raw record from a detail (`get_*`) or `fetch`
+ * tool. Record-freshness fields the user may legitimately care about
+ * (`updatedAt`, `publishedAt`, `createdAt`) are intentionally NOT stripped.
+ * See https://developers.openai.com/apps-sdk/app-submission-guidelines.
+ */
+const INTERNAL_RECORD_FIELDS = new Set<string>([
+  "fetchedAt",
+  "firstSeenAt",
+  "lastSeenAt",
+  "crawledAt",
+  "lastCrawled",
+  "lastCrawledAt",
+  "ingestedAt",
+  "source",
+  "sourceUrl",
+  "catalogUrl",
+]);
+
+/**
+ * Recursively remove internal/provenance fields from a catalog record (at any
+ * depth, since reviewers also inspect nested fields) while preserving all
+ * user-relevant public data. Returns a new value; the input is not mutated.
+ */
+export function sanitizeRecord<T>(value: T): T {
+  if (Array.isArray(value)) {
+    return value.map((v) => sanitizeRecord(v)) as unknown as T;
+  }
+  if (value && typeof value === "object") {
+    const out: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(value as Record<string, unknown>)) {
+      if (INTERNAL_RECORD_FIELDS.has(k)) continue;
+      out[k] = sanitizeRecord(v);
+    }
+    return out as unknown as T;
+  }
+  return value;
+}
+
 export function jsonContent(value: unknown): ToolResult {
   return { content: [{ type: "text", text: JSON.stringify(value, null, 2) }] };
 }

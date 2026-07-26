@@ -12,6 +12,7 @@ import {
   jsonContent,
   normalizePage,
   readOnlyTool,
+  sanitizeRecord,
   type ToolServer,
   upstreamGet,
 } from "./catalogClient";
@@ -195,7 +196,7 @@ export function registerIssuerTools(server: ToolServer): void {
           requested: { id: args.id },
         });
       }
-      const issuer = result.data as RawIssuer;
+      const issuer = sanitizeRecord(result.data as RawIssuer);
       return jsonContent({
         ...issuer,
         detailUrl: issuerExplorerUrl(args.id),

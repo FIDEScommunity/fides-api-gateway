@@ -12,6 +12,7 @@ import {
   normalizePage,
   readOnlyTool,
   organizationExplorerUrl,
+  sanitizeRecord,
   type ToolServer,
   upstreamGet,
 } from "./catalogClient";
@@ -36,6 +37,9 @@ interface RawOrganization {
   website?: string;
   country?: string;
   sectors?: string[];
+  catalogTier?: "Community" | "Pro" | string;
+  tags?: string[];
+  offerings?: string[];
   ecosystemRoles?: unknown;
   certifications?: RawCertification[];
 }
@@ -68,6 +72,10 @@ function summarizeCertifications(certs?: RawCertification[]): {
   };
 }
 
+function summarizeListField(values?: string[]): string[] | undefined {
+  return values && values.length ? values : undefined;
+}
+
 function summarize(o: RawOrganization): Record<string, unknown> {
   const id = o.id ?? "";
   return {
@@ -75,8 +83,11 @@ function summarize(o: RawOrganization): Record<string, unknown> {
     name: o.name ?? o.legalName,
     country: o.country,
     sectors: o.sectors,
+    catalogTier: o.catalogTier,
     ecosystemRoles: o.ecosystemRoles,
     website: o.website,
+    tags: summarizeListField(o.tags),
+    offerings: summarizeListField(o.offerings),
     ...summarizeCertifications(o.certifications),
     detailUrl: id ? organizationExplorerUrl(id) : undefined,
     apiUrl: id ? apiDetailUrl(id) : undefined,
@@ -103,7 +114,10 @@ const searchSchema: Record<string, z.ZodTypeAny> = {
   search: z
     .string()
     .optional()
-    .describe("Full-text search on name, legal name, description"),
+    .describe(
+      "Full-text search on name, legal name, description, identifiers, " +
+        "certifications, and Pro plan offerings",
+    ),
   country: z
     .string()
     .length(2)
@@ -151,8 +165,9 @@ export function registerOrganizationTools(server: ToolServer): void {
       "qualified trust services they may provide per the EU eIDAS Trust List " +
       "— e.g. to answer 'which QTSPs may issue QEAAs?' use " +
       "trustService='QEAA' (optionally with certification='qtsp'). Filter by " +
-      "free-text, country, role, certification, and trustService. Results " +
-      "include each organization's certification and trust-service codes. " +
+      "free-text, country, role, certification, and trustService. Search also " +
+      "matches Pro plan offerings. Results include catalogTier, tags and " +
+      "offerings when present (Pro), plus certification and trust-service codes. " +
       "Returns a compact, paginated list with canonical detail URLs.",
     searchSchema,
     readOnlyTool("Search organizations"),
@@ -202,7 +217,8 @@ export function registerOrganizationTools(server: ToolServer): void {
   server.tool(
     "get_organization",
     "Get full details of a single FIDES organization by its catalog id " +
-      "(from search_organizations), e.g. 'org:animo'.",
+      "(from search_organizations), e.g. 'org:animo'. Includes catalogTier " +
+      "(Community or Pro), offerings, tags, and contact when the org is on a Pro plan.",
     getSchema,
     readOnlyTool("Get organization"),
     async (rawArgs) => {
@@ -219,7 +235,7 @@ export function registerOrganizationTools(server: ToolServer): void {
           requested: { id: args.id },
         });
       }
-      const org = result.data as RawOrganization;
+      const org = sanitizeRecord(result.data as RawOrganization);
       return jsonContent({
         ...org,
         detailUrl: organizationExplorerUrl(args.id),
