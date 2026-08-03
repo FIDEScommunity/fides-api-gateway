@@ -43,6 +43,12 @@ export interface ProviderConfig {
   model: string;
   /** Sampling temperature, or null to omit (some models reject non-default). */
   temperature: number | null;
+  /**
+   * OpenAI `reasoning_effort` value, or null to omit. Needed for the gpt-5.6
+   * family: with function tools on /chat/completions OpenAI rejects the default
+   * effort, so we must send "none" (or migrate to /v1/responses).
+   */
+  reasoningEffort: string | null;
 }
 
 export interface CompletionResult {
@@ -109,14 +115,33 @@ function resolveTemperature(): number | null {
   return Number.isFinite(n) ? n : 0.2;
 }
 
+/**
+ * Resolve the OpenAI `reasoning_effort`. An explicit LLM_REASONING_EFFORT wins
+ * (use "omit"/"default"/empty to send nothing). Otherwise the gpt-5.6 family
+ * defaults to "none" because OpenAI rejects function tools on /chat/completions
+ * with any higher effort. Non-OpenAI providers (Mistral) omit it entirely.
+ */
+function resolveReasoningEffort(provider: string, model: string): string | null {
+  const raw = process.env.LLM_REASONING_EFFORT;
+  if (raw !== undefined) {
+    const v = raw.trim().toLowerCase();
+    if (v === "" || v === "omit" || v === "default") return null;
+    return v;
+  }
+  if (provider === "openai" && /gpt-5\.6/.test(model)) return "none";
+  return null;
+}
+
 export function resolveProvider(): ProviderConfig {
   const provider = (process.env.LLM_PROVIDER || "mistral").toLowerCase();
+  const model = process.env.LLM_MODEL || defaultModel(provider);
   return {
     provider,
     apiKey: resolveApiKey(provider),
-    model: process.env.LLM_MODEL || defaultModel(provider),
+    model,
     baseUrl: trimSlash(process.env.LLM_BASE_URL || defaultBaseUrl(provider)),
     temperature: resolveTemperature(),
+    reasoningEffort: resolveReasoningEffort(provider, model),
   };
 }
 
@@ -158,6 +183,9 @@ export async function streamChatCompletion(
   };
   if (cfg.temperature !== null) {
     body.temperature = cfg.temperature;
+  }
+  if (cfg.reasoningEffort !== null) {
+    body.reasoning_effort = cfg.reasoningEffort;
   }
   if (tools && tools.length > 0) {
     body.tools = tools;
