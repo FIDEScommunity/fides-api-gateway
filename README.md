@@ -143,9 +143,14 @@ agent calls those handlers directly — no MCP transport internally.
   origin is `FIDES_SITE_ORIGIN` (default `https://fides.community`).
 - **Cost controls (public endpoint):** per-IP rate limit
   (`CHAT_RATE_LIMIT_PER_MIN`) + daily approximate-token budget
-  (`CHAT_DAILY_TOKEN_BUDGET`). Uses Upstash Redis (REST) when configured,
-  otherwise per-instance in-memory counters. `CHAT_ALLOWED_ORIGINS` restricts the
-  browser origins permitted to call the endpoint.
+  (`CHAT_DAILY_TOKEN_BUDGET`). Uses Upstash Redis (REST) when configured;
+  local/preview may fall back to per-instance memory. **Production requires
+  Upstash** (`UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN`, or
+  `KV_REST_API_*`) — otherwise `/api/chat` returns 503. Override only with
+  `CHAT_REQUIRE_UPSTASH=0`. `CHAT_ALLOWED_ORIGINS` is a comma-separated browser
+  Origin allowlist (never `*`). If unset, production defaults to
+  `https://fides.community` only; disallowed Origins get **403 before** any
+  LLM call.
 - **Usage logging (`lib/chatLog.ts`):** when Upstash is configured, each turn is
   logged anonymously to a per-day list `chat:log:YYYY-MM-DD` — the question text
   plus lightweight metadata (`ok`, approx `tokens`, source count + counts per

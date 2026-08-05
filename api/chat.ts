@@ -16,6 +16,10 @@
  * (see lib/rateLimit.ts). The LLM provider key lives server-side only
  * (LLM_API_KEY) — never in WordPress or the browser.
  *
+ * Browser callers must present an Origin on CHAT_ALLOWED_ORIGINS (defaults to
+ * https://fides.community in production — never "*"). Production also requires
+ * Upstash Redis for global rate limits (see lib/chatGuards.ts).
+ *
  * See docs/MCP-IMPLEMENTATION-PLAN.md → section 4.
  */
 
@@ -24,6 +28,11 @@ import {
   type ChatSource,
   type IncomingMessage,
 } from "../lib/chatAgent";
+import {
+  chatCorsHeaders,
+  chatRateLimitStoreReady,
+  isChatOriginAllowed,
+} from "../lib/chatGuards";
 import { logChatEvent } from "../lib/chatLog";
 import { trackEvent } from "../lib/matomo";
 import { isLlmConfigured } from "../lib/llm";
@@ -39,24 +48,8 @@ export const runtime = "nodejs";
 const MAX_MESSAGES = 20;
 const MAX_CHARS_PER_MESSAGE = 4000;
 
-function allowedOrigin(req: Request): string {
-  const configured = (process.env.CHAT_ALLOWED_ORIGINS || "")
-    .split(",")
-    .map((s) => s.trim())
-    .filter(Boolean);
-  const origin = req.headers.get("origin") || "";
-  if (configured.length === 0) return "*";
-  if (origin && configured.includes(origin)) return origin;
-  return configured[0]!;
-}
-
 function corsHeaders(req: Request): Record<string, string> {
-  return {
-    "Access-Control-Allow-Origin": allowedOrigin(req),
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type, Accept",
-    Vary: "Origin",
-  };
+  return chatCorsHeaders(req);
 }
 
 function jsonResponse(
@@ -75,7 +68,18 @@ function jsonResponse(
   });
 }
 
+function rejectOrigin(req: Request): Response | null {
+  const origin = req.headers.get("origin");
+  if (isChatOriginAllowed(origin)) return null;
+  return jsonResponse(req, 403, {
+    error: "Origin not allowed",
+    hint: "Set CHAT_ALLOWED_ORIGINS to a comma-separated allowlist (e.g. https://fides.community).",
+  });
+}
+
 export async function OPTIONS(req: Request): Promise<Response> {
+  const blocked = rejectOrigin(req);
+  if (blocked) return blocked;
   return new Response(null, { status: 204, headers: corsHeaders(req) });
 }
 
@@ -100,10 +104,22 @@ function parseMessages(raw: unknown): IncomingMessage[] | null {
 
 export async function POST(req: Request): Promise<Response> {
   const reqStart = performance.now();
+
+  const blocked = rejectOrigin(req);
+  if (blocked) return blocked;
+
   if (!isLlmConfigured()) {
     return jsonResponse(req, 503, {
       error: "Chat is not configured",
       hint: "Set LLM_API_KEY (and optionally LLM_PROVIDER / LLM_MODEL).",
+    });
+  }
+
+  const store = chatRateLimitStoreReady();
+  if (!store.ok) {
+    return jsonResponse(req, 503, {
+      error: "Chat rate limiting is not configured",
+      hint: store.hint,
     });
   }
 

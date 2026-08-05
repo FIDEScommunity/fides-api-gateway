@@ -10,9 +10,13 @@
  *
  * Storage: Upstash Redis REST when `UPSTASH_REDIS_REST_URL` /
  * `UPSTASH_REDIS_REST_TOKEN` are set (accurate across Vercel instances), with an
- * in-memory per-instance fallback otherwise so local/preview still work.
+ * in-memory per-instance fallback for local/preview. Production refuses chat
+ * when Upstash is unset (see lib/chatGuards.ts). If Upstash is configured but
+ * unreachable in production, counters fail closed (deny) instead of silently
+ * falling back to per-instance memory.
  */
 
+import { isVercelProduction } from "./chatGuards";
 import { upstashCmd, upstashConfig } from "./upstash";
 
 const DEFAULT_RATE_PER_MIN = 20;
@@ -60,8 +64,12 @@ async function incrWithTtl(key: string, ttlSeconds: number): Promise<number> {
       await upstashCmd(cfg, ["EXPIRE", key, ttlSeconds]);
     }
     return value;
-  } catch {
-    // If the store is unreachable, fail open to in-memory so we still bound.
+  } catch (e) {
+    // Production: fail closed so a Redis outage cannot unlock unlimited LLM spend.
+    if (isVercelProduction()) {
+      console.error("Upstash INCR failed (fail closed):", key, e);
+      return Number.MAX_SAFE_INTEGER;
+    }
     return memIncr(key, ttlSeconds);
   }
 }
@@ -79,7 +87,13 @@ async function incrByWithTtl(
       await upstashCmd(cfg, ["EXPIRE", key, ttlSeconds]);
     }
     return value;
-  } catch {
+  } catch (e) {
+    if (isVercelProduction()) {
+      console.error("Upstash INCRBY failed (fail closed):", key, e);
+      // For budget checks (amount === 0): report "fully used". For recordTokenUsage
+      // we still avoid writing to memory so the global budget stays authoritative.
+      return amount === 0 ? Number.MAX_SAFE_INTEGER : amount;
+    }
     return memIncrBy(key, amount, ttlSeconds);
   }
 }

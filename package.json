@@ -8,6 +8,7 @@
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
+    "test:chat-guards": "npx tsx --test lib/chatGuards.test.ts",
     "health-check": "node scripts/health-check.mjs"
   },
   "devDependencies": {
