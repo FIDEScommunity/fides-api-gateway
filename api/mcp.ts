@@ -31,7 +31,7 @@ const mcpHandler = createMcpHandler(
   },
   {
     serverInfo: {
-      name: "fides-ecosystem-explorer",
+      name: "community.fides/fides-ecosystem-explorer",
       version: "1.0.0",
     },
   },

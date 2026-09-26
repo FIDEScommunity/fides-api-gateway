@@ -7,6 +7,14 @@
     {
       "source": "/.well-known/api-catalog",
       "destination": "/api/well-known-api-catalog"
+    },
+    {
+      "source": "/.well-known/ai-catalog.json",
+      "destination": "/api/well-known-ai-catalog"
+    },
+    {
+      "source": "/api/mcp/server-card",
+      "destination": "/api/mcp-server-card"
     }
   ],
   "redirects": [

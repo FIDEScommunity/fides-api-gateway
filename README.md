@@ -48,6 +48,20 @@ This gateway exposes [RFC 9727](https://www.rfc-editor.org/rfc/rfc9727) **api-ca
 - **Implementation:** `api/well-known-api-catalog.ts`, rewritten in `vercel.json` from `/.well-known/api-catalog`
 
 `HEAD` responses include a `Link` header with `rel="api-catalog"` as required by the RFC.
+Each configured catalog list endpoint also has a `service-desc` relation to its
+OpenAPI document.
+
+### MCP discovery
+
+The MCP endpoint publishes draft machine-readable discovery metadata:
+
+- **AI Catalog:** `GET` / `HEAD` `https://<gateway>/.well-known/ai-catalog.json`
+  (`application/ai-catalog+json`)
+- **Server Card:** `GET` / `HEAD` `https://<gateway>/api/mcp/server-card`
+  (`application/mcp-server-card+json`)
+
+The AI Catalog points to the Server Card, and the Server Card advertises the
+Streamable HTTP endpoint at `/api/mcp`.
 
 ### Maintaining discovery (`lib/gatewayCatalogs.ts`)
 
@@ -56,7 +70,9 @@ This gateway exposes [RFC 9727](https://www.rfc-editor.org/rfc/rfc9727) **api-ca
 | Consumer | Purpose |
 |----------|---------|
 | `api/public/catalogs.ts` | JSON list of catalogs and paths (`configured` follows upstream env vars) |
-| `api/well-known-api-catalog.ts` | RFC 9727 Linkset: `item` links to each **configured** catalog’s list endpoint |
+| `api/well-known-api-catalog.ts` | RFC 9727 Linkset: `item` links to each **configured** catalog’s list endpoint and `service-desc` links to its OpenAPI document |
+| `api/well-known-ai-catalog.ts` | Domain-level AI Catalog pointing to the MCP Server Card |
+| `api/mcp-server-card.ts` | MCP identity and Streamable HTTP connection metadata |
 
 If you add a new proxy under `api/public/` but forget to extend `GATEWAY_CATALOG_ROUTES`, automated discovery and agent-oriented tools will be **out of date** even if the route works.
 
@@ -64,7 +80,8 @@ If you add a new proxy under `api/public/` but forget to extend `GATEWAY_CATALOG
 
 1. Edit **`lib/gatewayCatalogs.ts`** (`GATEWAY_CATALOG_ROUTES`, and `GatewayCatalogId` if you add a catalog).
 2. Add or adjust **serverless handlers** and **`vercel.json`** redirects if paths change.
-3. Redeploy and verify **`/api/public/catalogs`** and **`/.well-known/api-catalog`** (with `Accept: application/linkset+json`).
+3. Redeploy and verify **`/api/public/catalogs`**, **`/.well-known/api-catalog`**,
+   **`/.well-known/ai-catalog.json`**, and **`/api/mcp/server-card`**.
 
 ---
 

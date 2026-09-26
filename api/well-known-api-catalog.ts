@@ -61,9 +61,18 @@ export default function handler(req: VercelRequest, res: VercelResponse): void {
   }
 
   const items: { href: string }[] = [];
+  const apiDescriptions: {
+    anchor: string;
+    "service-desc": { href: string }[];
+  }[] = [];
   for (const route of GATEWAY_CATALOG_ROUTES) {
     if (!isCatalogConfigured(route)) continue;
-    items.push({ href: `${origin}${route.listPath}` });
+    const listUrl = `${origin}${route.listPath}`;
+    items.push({ href: listUrl });
+    apiDescriptions.push({
+      anchor: listUrl,
+      "service-desc": [{ href: `${origin}${route.openApiPath}` }],
+    });
   }
 
   const body = {
@@ -74,6 +83,7 @@ export default function handler(req: VercelRequest, res: VercelResponse): void {
         // MCP server endpoint for AI agents (Streamable HTTP).
         service: [{ href: `${origin}${GATEWAY_MCP_PATH}` }],
       },
+      ...apiDescriptions,
     ],
   };
 
