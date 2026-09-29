@@ -9,8 +9,10 @@
   "scripts": {
     "typecheck": "tsc --noEmit",
     "test:chat-guards": "npx tsx --test lib/chatGuards.test.ts",
+    "test:chat-agent": "npx tsx --test lib/chatAgent.test.ts",
+    "test:site-tools": "npx tsx --test lib/siteTools.test.ts",
     "test:discovery": "npx tsx --test api/discovery.test.ts",
-    "test": "npm run test:chat-guards && npm run test:discovery",
+    "test": "npm run test:chat-guards && npm run test:chat-agent && npm run test:site-tools && npm run test:discovery",
     "health-check": "node scripts/health-check.mjs"
   },
   "devDependencies": {

@@ -151,13 +151,27 @@ agent calls those handlers directly — no MCP transport internally.
 - **Grounding:** the system prompt forbids answering without tool data and
   requires linking to canonical `api.fides.community` detail URLs; answers follow
   the language of the question (NL/EN).
-- **Site-content search (`lib/siteTools.ts`):** an optional `search_site_content`
-  tool answers conceptual/general questions ("what is a business wallet", what
-  FIDES is, manifesto, use cases, news) from the public FIDES website over the
-  WordPress REST API (`/wp-json/wp/v2/pages|posts`), returning short citable page
-  excerpts. **Kill switch:** enabled by default; set `CHAT_SITE_CONTENT_ENABLED=0`
-  to remove the tool entirely (chat falls back to catalog-only answers). Site
-  origin is `FIDES_SITE_ORIGIN` (default `https://fides.community`).
+- **Site-content browsing (`lib/siteTools.ts`):** optional
+  `list_site_content` and `read_site_page` tools answer conceptual/general
+  questions ("what is a business wallet", what FIDES is, awards, manifesto,
+  use cases, news) from the public FIDES website over the WordPress REST API
+  (`/wp-json/wp/v2/pages|posts`). The first tool returns a complete compact
+  title-and-heading index; the model chooses relevant documents and the second
+  tool returns their plain text in bounded 30,000-character chunks. WordPress
+  does not search or rank results. Site content is explicitly treated as
+  untrusted reference data, exact page URLs are restricted to the configured
+  FIDES origin, and index metadata is capped to control prompt size. The index
+  and page content are cached per instance for 30 minutes; a failed refresh
+  temporarily falls back to the last cached copy. Once a chat turn starts site
+  browsing, later tool rounds are restricted to the two site tools so entity
+  names on a page cannot trigger unrelated catalog searches/source cards. After
+  a complete page-reading round, tools are removed from the next model round to
+  prevent redundant page reads; additional rounds remain possible for chunks.
+  Source cards prefer URLs cited in the final answer, preventing unused
+  parallel tool results from appearing as apparent evidence.
+  **Kill switch:** enabled by default; set `CHAT_SITE_CONTENT_ENABLED=0` to
+  remove both tools (chat falls back to catalog-only answers). Site origin is
+  `FIDES_SITE_ORIGIN` (default `https://fides.community`).
 - **Cost controls (public endpoint):** per-IP rate limit
   (`CHAT_RATE_LIMIT_PER_MIN`) + daily approximate-token budget
   (`CHAT_DAILY_TOKEN_BUDGET`). Uses Upstash Redis (REST) when configured;

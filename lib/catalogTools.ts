@@ -26,8 +26,8 @@ export function registerAllTools(server: ToolServer): void {
   registerGenericTools(server);
   // Shared vocabulary/glossary lookups (definitions behind the catalog terms).
   registerVocabularyTools(server);
-  // Optional WordPress site-content search for conceptual questions.
-  // Kill switch: CHAT_SITE_CONTENT_ENABLED=0 removes this tool entirely.
+  // Optional WordPress site-content browsing for conceptual questions.
+  // Kill switch: CHAT_SITE_CONTENT_ENABLED=0 removes both tools entirely.
   if (isSiteContentEnabled()) {
     registerSiteTools(server);
   }
