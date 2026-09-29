@@ -43,7 +43,8 @@ const EXPECTED_TOOLS = [
   "search_use_cases",
   "get_use_case",
   "explain_terms",
-  "search_site_content",
+  "list_site_content",
+  "read_site_page",
 ];
 
 /**
@@ -101,9 +102,15 @@ const CHECKS = [
     submissionTestCase: true,
   },
   {
-    tool: "search_site_content",
-    args: { query: "business wallets" },
-    listKey: "results",
+    tool: "list_site_content",
+    args: {},
+    listKey: "documents",
+    submissionTestCase: true,
+  },
+  {
+    tool: "read_site_page",
+    args: { slug: "fides-community-awards" },
+    requireFields: ["title", "text", "url"],
     submissionTestCase: true,
   },
   { tool: "search", args: { query: "animo" }, listKey: "results" },
@@ -249,7 +256,9 @@ async function checkToolInventory() {
   record(
     "annotations are read-only, non-destructive, open-world",
     wrong.length === 0,
-    wrong.length ? `drifted: ${wrong.map((t) => t.name).join(", ")}` : "all 16 correct",
+    wrong.length
+      ? `drifted: ${wrong.map((t) => t.name).join(", ")}`
+      : `all ${tools.length} correct`,
   );
   return tools;
 }

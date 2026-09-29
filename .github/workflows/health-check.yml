@@ -22,7 +22,9 @@ permissions:
 jobs:
   health-check:
     name: Check public MCP tools
-    runs-on: ubuntu-latest
+    # Pin the image. ubuntu-latest moves to Ubuntu 26 on 19 October 2026, and
+    # this job only needs Node from actions/setup-node.
+    runs-on: ubuntu-24.04
     if: github.repository == 'FIDEScommunity/fides-api-gateway'
 
     steps:
@@ -40,7 +42,7 @@ jobs:
 
       - name: Upload health report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: MCP health report - ${{ github.run_id }}
           path: |
@@ -52,7 +54,7 @@ jobs:
       # cannot sit unnoticed the way the RP catalog outage did.
       - name: Report status via tracking issue
         if: always()
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const fs = require('fs');
