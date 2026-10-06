@@ -1,0 +1,47 @@
+# FIDES API and MCP
+
+> Public machine-readable access to the FIDES Ecosystem Explorer for applications and AI agents.
+
+Base URL: https://api.fides.community/
+
+## Discovery
+
+- [API landing page](https://api.fides.community/)
+- [Catalog discovery](https://api.fides.community/api/public/catalogs)
+- [OpenAPI discovery](https://api.fides.community/openapi.json)
+- [Documentation index](https://api.fides.community/docs)
+
+The catalog-discovery response is the authoritative list of configured catalogs and includes each catalog's list endpoint, detail-path pattern, OpenAPI document, and Swagger UI.
+
+## MCP
+
+- Endpoint: `https://api.fides.community/api/mcp`
+- Transport: Streamable HTTP
+- Authentication: none; the service exposes public, read-only catalog data
+
+The MCP server exposes compact, paginated search results and detailed lookup tools. Tool annotations mark operations as read-only, non-destructive, and idempotent. Available capabilities include wallets, credential types, organizations, issuers, relying parties, real-world use cases, terminology, and public FIDES site content.
+
+## REST catalogs
+
+- [Credential types](https://api.fides.community/api/public/credentialtype)
+- [Organizations](https://api.fides.community/api/public/organization)
+- [Issuers](https://api.fides.community/api/public/issuer)
+- [Wallets](https://api.fides.community/api/public/wallet)
+- [Relying parties](https://api.fides.community/api/public/rp)
+- [Use cases](https://api.fides.community/api/public/usecase)
+
+Use the individual OpenAPI documents returned by catalog discovery for parameters and response schemas. Prefer pagination and narrow filters; do not bulk-download complete catalogs unnecessarily.
+
+## Usage
+
+- Send standard JSON-RPC MCP messages to the MCP endpoint with `Accept: application/json, text/event-stream`.
+- For REST integrations, use the documented list and detail endpoints.
+- Preserve canonical detail URLs and FIDES attribution in user-facing results.
+- Treat catalog content as discovery information, not certification or legal advice.
+- Observe fair-use and applicable plan limits.
+
+## Policies
+
+- [Terms of Service](https://fides.community/terms/)
+- [Privacy Policy](https://fides.community/privacy/)
+- Contact: catalog@fides.community

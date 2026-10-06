@@ -1,0 +1,65 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "FIDES Public API Discovery",
+    "version": "1.0.0",
+    "description": "Discovery document for the public FIDES catalog APIs. Operations reference the authoritative per-catalog OpenAPI documents. AI clients can alternatively use the read-only MCP server at https://api.fides.community/api/mcp."
+  },
+  "servers": [
+    { "url": "https://api.fides.community" }
+  ],
+  "externalDocs": {
+    "description": "FIDES API documentation",
+    "url": "https://api.fides.community/docs"
+  },
+  "paths": {
+    "/api/public/catalogs": {
+      "get": {
+        "operationId": "discoverCatalogs",
+        "summary": "Discover configured public catalogs and MCP access",
+        "responses": {
+          "200": {
+            "description": "Configured catalogs and their list, detail, OpenAPI, and Swagger URLs",
+            "content": { "application/json": { "schema": { "type": "object" } } }
+          }
+        }
+      }
+    },
+    "/api/public/credentialtype": {
+      "$ref": "https://api.fides.community/api/public/credential-api-docs#/paths/~1api~1public~1credentialtype"
+    },
+    "/api/public/credentialtype/{id}": {
+      "$ref": "https://api.fides.community/api/public/credential-api-docs#/paths/~1api~1public~1credentialtype~1{id}"
+    },
+    "/api/public/organization": {
+      "$ref": "https://api.fides.community/api/public/organization-api-docs#/paths/~1organization"
+    },
+    "/api/public/organization/{id}": {
+      "$ref": "https://api.fides.community/api/public/organization-api-docs#/paths/~1organization~1{id}"
+    },
+    "/api/public/issuer": {
+      "$ref": "https://api.fides.community/api/public/issuer-api-docs#/paths/~1issuer"
+    },
+    "/api/public/issuer/{id}": {
+      "$ref": "https://api.fides.community/api/public/issuer-api-docs#/paths/~1issuer~1{id}"
+    },
+    "/api/public/wallet": {
+      "$ref": "https://api.fides.community/api/public/wallet-api-docs#/paths/~1wallet"
+    },
+    "/api/public/wallet/{orgId}/{walletId}": {
+      "$ref": "https://api.fides.community/api/public/wallet-api-docs#/paths/~1wallet~1{orgId}~1{walletId}"
+    },
+    "/api/public/rp": {
+      "$ref": "https://api.fides.community/api/public/rp-api-docs#/paths/~1rp"
+    },
+    "/api/public/rp/{id}": {
+      "$ref": "https://api.fides.community/api/public/rp-api-docs#/paths/~1rp~1{id}"
+    },
+    "/api/public/usecase": {
+      "$ref": "https://api.fides.community/api/public/usecase-api-docs#/paths/~1usecase"
+    },
+    "/api/public/usecase/{id}": {
+      "$ref": "https://api.fides.community/api/public/usecase-api-docs#/paths/~1usecase~1{id}"
+    }
+  }
+}

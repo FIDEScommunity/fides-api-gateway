@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Documentation index for the FIDES public APIs and MCP connector.">
+  <title>FIDES API Documentation</title>
+  <style>
+    :root { color-scheme: light dark; font-family: system-ui, sans-serif; }
+    body { max-width: 860px; margin: 0 auto; padding: 2rem 1.25rem 4rem; line-height: 1.55; }
+    a { color: #2878ff; }
+    code { background: color-mix(in srgb, CanvasText 9%, Canvas); padding: .15rem .35rem; border-radius: .25rem; }
+    li { margin: .55rem 0; }
+    .lede { font-size: 1.15rem; }
+  </style>
+</head>
+<body>
+  <header>
+    <p><a href="https://fides.community/">FIDES Community</a> · <a href="/">API home</a></p>
+    <h1>FIDES API documentation</h1>
+    <p class="lede">Machine-readable access to public wallets, credential types, organizations, issuers, relying parties, and real-world use cases.</p>
+  </header>
+
+  <main>
+    <h2>Discovery</h2>
+    <ul>
+      <li><a href="/api/public/catalogs">Configured catalogs</a> — authoritative machine-readable endpoint index</li>
+      <li><a href="/openapi.json">Combined OpenAPI discovery</a></li>
+      <li><a href="/llms.txt">LLM-readable service overview</a></li>
+    </ul>
+
+    <h2>AI and MCP</h2>
+    <p>Connect an MCP-compatible AI client to <code>https://api.fides.community/api/mcp</code>. The server uses Streamable HTTP, requires no sign-in, and exposes only read-only public-data tools.</p>
+    <p><a href="https://fides.community/use-fides-with-ai/">ChatGPT and Claude setup instructions</a></p>
+
+    <h2>Catalog APIs</h2>
+    <ul>
+      <li>Credential types: <a href="/api/public/credential-api-docs">OpenAPI</a> · <a href="/swagger-credentialtype.html">Swagger</a></li>
+      <li>Organizations: <a href="/api/public/organization-api-docs">OpenAPI</a> · <a href="/swagger-organization.html">Swagger</a></li>
+      <li>Issuers: <a href="/api/public/issuer-api-docs">OpenAPI</a> · <a href="/swagger-issuer.html">Swagger</a></li>
+      <li>Wallets: <a href="/api/public/wallet-api-docs">OpenAPI</a> · <a href="/swagger-wallet.html">Swagger</a></li>
+      <li>Relying parties: <a href="/api/public/rp-api-docs">OpenAPI</a> · <a href="/swagger-rp.html">Swagger</a></li>
+      <li>Use cases: <a href="/api/public/usecase-api-docs">OpenAPI</a> · <a href="/swagger-usecase.html">Swagger</a></li>
+    </ul>
+
+    <h2>Responsible use</h2>
+    <p>Catalog information supports discovery and may be incomplete or outdated. Verify important information with primary sources. See the <a href="https://fides.community/terms/">Terms of Service</a> and <a href="https://fides.community/privacy/">Privacy Policy</a>.</p>
+  </main>
+</body>
+</html>
