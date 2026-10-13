@@ -56,13 +56,17 @@
     </section>
 
     <section class="intro-section intro-section--highlight">
-      <h2>Live</h2>
-      <h3>TS11 Schema Discovery</h3>
+      <h2>TS11 Schema Discovery</h2>
       <p>
         The FIDES API exposes a TS11-compatible community catalogue of attestations aligned with the European Digital Identity Wallet Architecture and Reference Framework (ARF). Wallet providers and relying parties can discover SchemaMeta records — formats, schemas, rulebooks, levels of assurance and holder binding — through a standardized, JWS-signed interface.
       </p>
       <p>
         Use <code>GET /schemas</code> and <code>GET /schemas/{schemaId}</code> (Accept: <code>application/jwt</code>). Verify signatures with the JWKS at <code>/api/jwks</code> (also <code>/.well-known/jwks.json</code>). OpenAPI paths are documented in the credential catalog API docs.
+      </p>
+      <p>
+        Specification:
+        <a href="https://github.com/eu-digital-identity-wallet/eudi-doc-standards-and-technical-specifications/blob/main/docs/technical-specifications/ts11-interfaces-and-formats-for-catalogue-of-attributes-and-catalogue-of-schemes.md" rel="noopener noreferrer" target="_blank">ARF TS11 — Interfaces and formats for the catalogue of attributes and the catalogue of schemes</a>
+        (EUDI Wallet technical specifications on GitHub).
       </p>
       <p>
         Beyond TS11, the FIDES API provides broader discovery capabilities for organizations, issuers, wallets, trust ecosystems and other ecosystem metadata, making it easier to build interoperable digital trust solutions across multiple ecosystems worldwide.
@@ -150,10 +154,11 @@
         <article class="catalog-card">
           <h3>TS11 schemas (SchemaMeta)</h3>
           <ul>
-            <li><a href="/schemas">List API</a> <span class="text-muted">(JWS when signing enabled)</span></li>
+            <li><a href="/schemas">List API</a> <span class="text-muted">(signed JWS — browsers download the JWT)</span></li>
             <li><code>GET /schemas/{schemaId}</code></li>
             <li><a href="/api/jwks">JWKS</a> · <a href="/.well-known/jwks.json">Well-known JWKS</a></li>
             <li><a href="/api/public/credential-api-docs">OpenAPI JSON</a> <span class="text-muted">(includes /schemas)</span></li>
+            <li><a href="/swagger-credentialtype.html">Swagger UI</a> <span class="text-muted">(same OpenAPI; Try it out returns JWT)</span></li>
           </ul>
         </article>
         <article class="catalog-card">
