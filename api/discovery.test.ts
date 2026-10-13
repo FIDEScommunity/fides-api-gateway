@@ -4,7 +4,7 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
 import apiCatalogHandler from "./well-known-api-catalog";
 import aiCatalogHandler from "./well-known-ai-catalog";
 import serverCardHandler from "./mcp-server-card";
-import { GATEWAY_CATALOG_ROUTES } from "../lib/gatewayCatalogs";
+import { GATEWAY_CATALOG_ROUTES, GATEWAY_TS11 } from "../lib/gatewayCatalogs";
 
 type MockResponse = {
   statusCode: number;
@@ -95,6 +95,23 @@ describe("agent discovery", () => {
         },
       ]);
     }
+    const ts11Description = body.linkset.find(
+      (entry) =>
+        entry.anchor === `https://api.fides.community${GATEWAY_TS11.listPath}`,
+    );
+    assert.deepEqual(ts11Description?.["service-desc"], [
+      {
+        href: `https://api.fides.community${GATEWAY_TS11.openApiPath}`,
+      },
+    ]);
+    const rootItems = body.linkset[0]?.item as { href: string }[] | undefined;
+    assert.ok(
+      rootItems?.some(
+        (item) =>
+          item.href === `https://api.fides.community${GATEWAY_TS11.jwksPath}`,
+      ),
+      "JWKS should appear in api-catalog items",
+    );
   });
 
   it("publishes an AI Catalog pointing to the server card", () => {

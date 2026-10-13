@@ -25,6 +25,15 @@
         }
       }
     },
+    "/schemas": {
+      "$ref": "https://api.fides.community/api/public/credential-api-docs#/paths/~1api~1public~1schemas"
+    },
+    "/schemas/{id}": {
+      "$ref": "https://api.fides.community/api/public/credential-api-docs#/paths/~1api~1public~1schemas~1{id}"
+    },
+    "/api/jwks": {
+      "$ref": "https://api.fides.community/api/public/credential-api-docs#/paths/~1api~1jwks"
+    },
     "/api/public/credentialtype": {
       "$ref": "https://api.fides.community/api/public/credential-api-docs#/paths/~1api~1public~1credentialtype"
     },

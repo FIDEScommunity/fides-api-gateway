@@ -2,7 +2,9 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
 import {
   GATEWAY_CATALOG_ROUTES,
   GATEWAY_MCP_PATH,
+  GATEWAY_TS11,
   isCatalogConfigured,
+  isTs11Configured,
 } from "../../lib/gatewayCatalogs";
 import { applyCors } from "../../lib/proxyUpstream";
 
@@ -47,5 +49,14 @@ export default function handler(req: VercelRequest, res: VercelResponse): void {
         ? { legacySwaggerPath: route.legacySwaggerPath }
         : {}),
     })),
+    ts11: {
+      configured: isTs11Configured(),
+      description: GATEWAY_TS11.description,
+      listPath: GATEWAY_TS11.listPath,
+      detailPathPattern: GATEWAY_TS11.detailPathPattern,
+      jwksPath: GATEWAY_TS11.jwksPath,
+      wellKnownJwksPath: GATEWAY_TS11.wellKnownJwksPath,
+      openApiPath: GATEWAY_TS11.openApiPath,
+    },
   });
 }
