@@ -122,7 +122,7 @@ const CHECKS = [
   { tool: "search_credential_types", args: { size: 3 }, listKey: "credentialTypes" },
   {
     tool: "get_credential_type",
-    args: { id: "cred:uidai:aadhaar-mdoc:mdoc" },
+    args: { id: "cred:uidai:aadhaar" },
     requireFields: ["id"],
   },
   { tool: "get_organization", args: { id: "org:animo" }, requireFields: ["name"] },
