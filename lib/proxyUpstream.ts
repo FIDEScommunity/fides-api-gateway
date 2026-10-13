@@ -88,6 +88,14 @@ export async function proxyToBackend(
     originEnvName: string;
     /** Path + query as seen by the upstream, e.g. "/api/public/organization?page=0" */
     upstreamPathAndQuery: string;
+    /**
+     * Optional per-header rewrite of upstream response headers before they are
+     * forwarded (e.g. remap `x-jku-url` to the gateway hostname).
+     */
+    rewriteResponseHeader?: (
+      name: string,
+      value: string,
+    ) => string | null | undefined;
   },
 ): Promise<void> {
   applyCors(res);
@@ -153,7 +161,11 @@ export async function proxyToBackend(
     if (lk === "content-encoding") {
       return;
     }
-    res.setHeader(key, value);
+    const rewritten = options.rewriteResponseHeader?.(key, value);
+    if (rewritten === null) {
+      return;
+    }
+    res.setHeader(key, rewritten === undefined ? value : rewritten);
   });
   applyCors(res);
 

@@ -78,10 +78,14 @@ If you add a new proxy under `api/public/` but forget to extend `GATEWAY_CATALOG
 
 **Checklist when changing the public API surface**
 
-1. Edit **`lib/gatewayCatalogs.ts`** (`GATEWAY_CATALOG_ROUTES`, and `GatewayCatalogId` if you add a catalog).
-2. Add or adjust **serverless handlers** and **`vercel.json`** redirects if paths change.
+1. Edit **`lib/gatewayCatalogs.ts`** (`GATEWAY_CATALOG_ROUTES`, `GATEWAY_TS11`, and `GatewayCatalogId` if you add a catalog).
+2. Add or adjust **serverless handlers** and **`vercel.json`** rewrites/redirects if paths change.
 3. Redeploy and verify **`/api/public/catalogs`**, **`/.well-known/api-catalog`**,
    **`/.well-known/ai-catalog.json`**, and **`/api/mcp/server-card`**.
+4. For TS11: also verify **`/schemas`**, **`/api/jwks`**, and **`/.well-known/jwks.json`**
+   (proxied via `lib/proxyTs11.ts` to `FIDES_CREDENTIAL_CATALOG_ORIGIN`). Optionally set
+   `TS11_JKU_URL=https://api.fides.community/api/jwks` on the credential catalog project
+   so direct upstream responses advertise the gateway JWKS URL.
 
 ---
 

@@ -95,3 +95,24 @@ export function isCatalogConfigured(route: GatewayCatalogRoute): boolean {
   const v = process.env[route.originEnv];
   return !!v && /^https?:\/\//i.test(String(v));
 }
+
+/**
+ * ARF TS11 catalogue-of-attestations surface, proxied from the credential catalog.
+ * Not a separate GATEWAY_CATALOG_ROUTES entry — same upstream origin, different paths.
+ */
+export const GATEWAY_TS11 = {
+  originEnv: "FIDES_CREDENTIAL_CATALOG_ORIGIN",
+  listPath: "/schemas",
+  detailPathPattern: "/schemas/{schemaId}",
+  jwksPath: "/api/jwks",
+  wellKnownJwksPath: "/.well-known/jwks.json",
+  /** Authoritative OpenAPI for SchemaMeta paths lives on the credential project. */
+  openApiPath: "/api/public/credential-api-docs",
+  description:
+    "EUDI ARF TS11 catalogue of attestations (JWS-signed SchemaMeta when signing is enabled).",
+} as const;
+
+export function isTs11Configured(): boolean {
+  const v = process.env[GATEWAY_TS11.originEnv];
+  return !!v && /^https?:\/\//i.test(String(v));
+}

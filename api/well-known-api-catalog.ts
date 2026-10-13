@@ -3,7 +3,9 @@ import { applyCors } from "../lib/proxyUpstream";
 import {
   GATEWAY_CATALOG_ROUTES,
   GATEWAY_MCP_PATH,
+  GATEWAY_TS11,
   isCatalogConfigured,
+  isTs11Configured,
 } from "../lib/gatewayCatalogs";
 
 /** Profile URI from RFC 9727 */
@@ -72,6 +74,15 @@ export default function handler(req: VercelRequest, res: VercelResponse): void {
     apiDescriptions.push({
       anchor: listUrl,
       "service-desc": [{ href: `${origin}${route.openApiPath}` }],
+    });
+  }
+  if (isTs11Configured()) {
+    const schemasUrl = `${origin}${GATEWAY_TS11.listPath}`;
+    items.push({ href: schemasUrl });
+    items.push({ href: `${origin}${GATEWAY_TS11.jwksPath}` });
+    apiDescriptions.push({
+      anchor: schemasUrl,
+      "service-desc": [{ href: `${origin}${GATEWAY_TS11.openApiPath}` }],
     });
   }
 

@@ -30,6 +30,16 @@ The MCP server exposes compact, paginated search results and detailed lookup too
 - [Relying parties](https://api.fides.community/api/public/rp)
 - [Use cases](https://api.fides.community/api/public/usecase)
 
+## TS11 catalogue of attestations
+
+ARF TS11-compatible SchemaMeta API (community catalogue). Successful responses are compact JWS (`application/jwt`) when signing is enabled; verify with the published JWKS.
+
+- [List schemas](https://api.fides.community/schemas)
+- Detail: `GET https://api.fides.community/schemas/{schemaId}`
+- [JWKS](https://api.fides.community/api/jwks)
+- [Well-known JWKS](https://api.fides.community/.well-known/jwks.json)
+- OpenAPI: credential catalog docs (`/schemas` paths)
+
 Use the individual OpenAPI documents returned by catalog discovery for parameters and response schemas. Prefer pagination and narrow filters; do not bulk-download complete catalogs unnecessarily.
 
 ## Usage

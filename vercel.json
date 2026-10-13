@@ -9,6 +9,18 @@
       "destination": "/docs.html"
     },
     {
+      "source": "/schemas",
+      "destination": "/api/schemas"
+    },
+    {
+      "source": "/schemas/:id",
+      "destination": "/api/schemas/:id"
+    },
+    {
+      "source": "/.well-known/jwks.json",
+      "destination": "/api/jwks"
+    },
+    {
       "source": "/.well-known/api-catalog",
       "destination": "/api/well-known-api-catalog"
     },
