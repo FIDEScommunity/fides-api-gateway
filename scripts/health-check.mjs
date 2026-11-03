@@ -24,7 +24,8 @@ const GATEWAY_URL = (process.env.GATEWAY_URL ?? "https://api.fides.community")
   .trim()
   .replace(/\/+$/, "");
 const MCP_ENDPOINT = `${GATEWAY_URL}/api/mcp`;
-const REQUEST_TIMEOUT_MS = 20_000;
+// Must exceed the server-side site fetch timeout so a cold index build can finish.
+const REQUEST_TIMEOUT_MS = 45_000;
 
 /** Every tool the app declares in its ChatGPT App submission. */
 const EXPECTED_TOOLS = [
@@ -263,12 +264,31 @@ async function checkToolInventory() {
   return tools;
 }
 
+/** Call a tool, retrying once on a thrown error or a tool-reported error. */
+async function callToolWithRetry(name, args) {
+  let first;
+  try {
+    first = await callTool(name, args);
+    if (!first.isError && !first.payload?.error) return first;
+  } catch (e) {
+    first = { thrown: e };
+  }
+  // Cold caches upstream can make the first call fail; a second call usually succeeds.
+  console.log(`RETRY ${name} after a failed first attempt`);
+  try {
+    return await callTool(name, args);
+  } catch (e) {
+    if (first.thrown) throw first.thrown;
+    throw e;
+  }
+}
+
 async function runCheck(check) {
   const label = `${check.tool}${check.submissionTestCase ? " (submission test case)" : ""}`;
   let payload;
   let isError;
   try {
-    ({ payload, isError } = await callTool(check.tool, check.args));
+    ({ payload, isError } = await callToolWithRetry(check.tool, check.args));
   } catch (e) {
     record(label, false, e.message, { tool: check.tool });
     return;

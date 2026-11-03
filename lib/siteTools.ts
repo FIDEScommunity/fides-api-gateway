@@ -18,7 +18,9 @@ import {
 const PER_PAGE = 100;
 const CACHE_TTL_MS = 30 * 60 * 1000;
 const STALE_RETRY_TTL_MS = 5 * 60 * 1000;
-const FETCH_TIMEOUT_MS = 10_000;
+// A cold index build downloads full page content from WordPress; 10s proved
+// too tight when the site is slow. Stays well below the 60s function limit.
+const FETCH_TIMEOUT_MS = 25_000;
 const MAX_PAGE_CHARS = 30_000;
 const MAX_HEADINGS_PER_DOCUMENT = 24;
 const SITE_KINDS = ["pages", "posts"] as const;
